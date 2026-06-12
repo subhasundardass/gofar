@@ -1,0 +1,70 @@
+package formui
+
+import "github.com/subhasundardas/gofar/framework/form"
+
+// SelectField renders <select> with the field's options. The placeholder,
+// when set, becomes a non-selectable prompt at the top of the list; once
+// a real value is chosen the placeholder stays out of the way.
+templ SelectField(field form.UIField, props FieldProps) {
+	<div
+		class={ props.WrapperClass }
+		id={ wrapperID(field.Key) }
+		if !field.Visible {
+			hidden
+		}
+	>
+		if field.Meta.Label != "" {
+			<label
+				for={ fieldID(field, props) }
+				class={ "block text-sm font-medium text-gray-700 mb-1 " + props.LabelClass }
+			>
+				{ field.Meta.Label }
+				if field.Meta.Required {
+					<span class="text-red-500 ml-0.5" aria-hidden="true">*</span>
+				}
+			</label>
+		}
+		<select
+			id={ fieldID(field, props) }
+			name={ field.Key }
+			class={ "w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm text-gray-800 " +
+				"shadow-xs outline-none transition-all " +
+				"focus:border-blue-500 focus:ring-2 focus:ring-blue-200 " +
+				"disabled:bg-gray-100 disabled:text-gray-400 disabled:cursor-not-allowed " +
+				props.Class }
+			tabindex={ props.TabIndex }
+			disabled?={ props.ResolveDisabled(field.Writable) }
+			aria-invalid?={ field.Error != "" }
+			aria-errormessage={ errorID(field.Key) }
+			aria-describedby={ hintID(field.Key) }
+			if props.AriaLabel != "" {
+				aria-label={ props.AriaLabel }
+			}
+			if props.Endpoint != "" {
+				data-on:input__debounce.250ms={ liveUpdateAttr(props.Endpoint) }
+			}
+			data-bind={ field.Key }
+		>
+			if props.Placeholder != "" {
+				<option
+					value=""
+					hidden?={ field.Value != "" }
+					selected?={ field.Value == "" }
+				>
+					{ props.Placeholder }
+				</option>
+			}
+			for _, opt := range field.Meta.Options {
+				<option value={ opt.Value } selected?={ field.Value == opt.Value }>
+					{ opt.Label }
+				</option>
+			}
+		</select>
+		if props.HintText != "" && field.Error == "" {
+			<p id={ hintID(field.Key) } class="mt-1 text-xs text-gray-500">{ props.HintText }</p>
+		}
+		if field.Error != "" {
+			<p id={ errorID(field.Key) } class="mt-1 text-sm text-red-500" role="alert">{ field.Error }</p>
+		}
+	</div>
+}

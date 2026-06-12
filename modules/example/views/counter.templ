@@ -1,0 +1,20 @@
+// Package views contains templ components for the example module.
+//
+// These templates demonstrate a basic datastar interaction:
+//   - counter.templ is a small fragment that is merged into the page
+//     over SSE every time the user clicks the button.
+//   - home.templ is the full page that loads datastar.js and wires up
+//     a `data-on-click` handler that POSTs to /example/counter.
+package views
+
+// Counter renders the current click count. The wrapper <div id="counter">
+// is the target of the datastar MergeFragment event, so the entire
+// fragment is swapped in place on the client.
+templ Counter(count string) {
+	<div id="counter" class="rounded border border-slate-300 bg-white px-4 py-3 text-slate-900 shadow-sm">
+		<span class="text-sm text-slate-500">Clicks:</span>
+		<span data-text={ count } class="ml-2 text-lg font-semibold tabular-nums">
+			{ count }
+		</span>
+	</div>
+}

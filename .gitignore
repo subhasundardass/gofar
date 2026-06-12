@@ -1,0 +1,58 @@
+# Binaries
+/bin/
+/build/
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
+# Go build output
+*.out
+
+# Test binary
+*.test
+
+# Go modules cache (optional ignore, usually NOT needed)
+/vendor/
+
+# Ent generated code (keep or ignore depending on your strategy)
+# If you regenerate often, you can ignore generated:
+/ent/generated/
+/ent/*/ent.go
+
+# Logs
+*.log
+
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE / Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Temporary files
+tmp/
+temp/
+
+# Coverage
+coverage.out
+
+# SQLite database (since you're using it)
+*.db
+*.sqlite
+*.sqlite3
+
+# Node (if frontend later added)
+node_modules/
+
+# Build artifacts
+dist/

@@ -1,0 +1,122 @@
+package formui
+
+import "github.com/subhasundardas/gofar/framework/form"
+
+// LookupField renders a search-as-you-type combobox backed by Datastar
+// signals. The user types into the search input; the dropdown filters
+// client-side over field.Meta.Options. Picking an item writes both the
+// label (back into the search box) and the value (into the hidden input
+// that the form actually submits).
+//
+// Accessibility: the search input owns role="combobox", the listbox has
+// role="listbox", and each option button has role="option". The
+// aria-activedescendant wiring is intentionally simple (no arrow-key
+// navigation yet) — add it if your users need keyboard-only selection.
+templ LookupField(field form.UIField, props FieldProps) {
+	<div
+		class={ props.WrapperClass }
+		id={ wrapperID(field.Key) }
+		if !field.Visible {
+			hidden
+		}
+	>
+		if field.Meta.Label != "" {
+			<label
+				for={ fieldID(field, props) }
+				class={ "block text-sm font-medium text-gray-700 mb-1 " + props.LabelClass }
+			>
+				{ field.Meta.Label }
+				if field.Meta.Required {
+					<span class="text-red-500 ml-0.5" aria-hidden="true">*</span>
+				}
+			</label>
+		}
+		<div
+			class="relative w-full text-sm"
+			data-signals-search={ getInitialSearchLabel(field) }
+			data-signals-open="false"
+			data-signals-value={ field.Value }
+			data-computed-filtereditems="items.filter(i => i.label.toLowerCase().includes(search.toLowerCase()))"
+			data-signals-items={ getInitialItemsJSON(field) }
+		>
+			<div class="relative">
+				<input
+					type="text"
+					id={ fieldID(field, props) }
+					placeholder={ props.Placeholder }
+					class={ "w-full rounded-md border border-gray-300 bg-white pl-3 pr-8 py-2 text-sm text-gray-800 " +
+						"shadow-xs outline-none transition-all " +
+						"focus:border-blue-500 focus:ring-2 focus:ring-blue-200 " +
+						"disabled:bg-gray-100 disabled:text-gray-400 disabled:cursor-not-allowed " +
+						props.Class }
+					tabindex={ props.TabIndex }
+					disabled?={ props.ResolveDisabled(field.Writable) }
+					autocomplete="off"
+					role="combobox"
+					aria-autocomplete="list"
+					aria-expanded="false"
+					aria-controls={ "listbox-" + field.Key }
+					aria-invalid?={ field.Error != "" }
+					aria-errormessage={ errorID(field.Key) }
+					aria-describedby={ hintID(field.Key) }
+					if props.AriaLabel != "" {
+						aria-label={ props.AriaLabel }
+					}
+					data-bind="search"
+					data-on:focus="open = true"
+					data-on:click__outside="open = false"
+				/>
+				<button
+					type="button"
+					class="absolute right-2.5 top-2.5 text-gray-400 hover:text-gray-600 text-xs transition-colors"
+					data-show="search.length > 0"
+					data-on:click={ lookupClearClick(field.Key) }
+					aria-label="Clear selection"
+					disabled?={ props.ResolveDisabled(field.Writable) }
+				>
+					✕
+				</button>
+			</div>
+			<input
+				type="hidden"
+				id={ "hidden-" + field.Key }
+				name={ field.Key }
+				data-bind="value"
+				if props.Endpoint != "" {
+					data-on:input__debounce.250ms={ liveUpdateAttr(props.Endpoint) }
+				}
+			/>
+			<div
+				id={ "listbox-" + field.Key }
+				role="listbox"
+				data-show="open && search.length > 0"
+				class="absolute left-0 right-0 z-50 mt-1 bg-white border border-gray-200 rounded-md shadow-lg max-h-60 overflow-y-auto"
+			>
+				<div
+					data-show="filteredItems.length === 0"
+					class="px-4 py-2 text-sm text-gray-500"
+				>
+					No results found
+				</div>
+				<div data-show="filteredItems.length > 0">
+					for _, opt := range field.Meta.Options {
+						<button
+							type="button"
+							role="option"
+							data-on:click={ lookupPickClick(field.Key, opt) }
+							class="w-full text-left px-4 py-2 text-sm text-gray-800 hover:bg-blue-500 hover:text-white transition-colors duration-75"
+						>
+							{ opt.Label }
+						</button>
+					}
+				</div>
+			</div>
+		</div>
+		if props.HintText != "" && field.Error == "" {
+			<p id={ hintID(field.Key) } class="mt-1 text-xs text-gray-500">{ props.HintText }</p>
+		}
+		if field.Error != "" {
+			<p id={ errorID(field.Key) } class="mt-1 text-sm text-red-500" role="alert">{ field.Error }</p>
+		}
+	</div>
+}

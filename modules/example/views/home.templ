@@ -1,0 +1,56 @@
+package views
+
+// Layout wraps page content with the shared <html><head><body> shell.
+// It loads datastar.js (the hypermedia-driven SSE engine used by the framework)
+// and the app's compiled CSS bundle.
+templ Layout(title string) {
+	<!DOCTYPE html>
+	<html lang="en">
+		<head>
+			<meta charset="utf-8"/>
+			<meta name="viewport" content="width=device-width, initial-scale=1"/>
+			<title>{ title }</title>
+			<link rel="stylesheet" href="/assets/css/app.css"/>
+			<script type="module" src="/assets/js/datastar.js"></script>
+		</head>
+		<body class="min-h-screen bg-slate-50 text-slate-900 antialiased">
+			<main class="mx-auto max-w-2xl px-6 py-12">
+				{ children... }
+			</main>
+		</body>
+	</html>
+}
+
+// Home is the example module's landing page. It demonstrates a basic
+// datastar interaction: clicking the "Increment" button fires a
+// data-on-click request to POST /example/counter, and the server
+// responds with an SSE stream that re-renders the #counter fragment
+// with the new value.
+templ Home(initial string) {
+	@Layout("GoFar · Example") {
+		<header class="mb-8">
+			<h1 class="text-3xl font-bold tracking-tight">GoFar Example</h1>
+			<p class="mt-2 text-slate-600">
+				A basic datastar + templ counter. Click the button — the server
+				responds over SSE and the fragment is merged in place.
+			</p>
+		</header>
+		<section class="space-y-4">
+			@Counter(initial)
+			<button
+				type="button"
+				class="rounded bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow hover:bg-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-400"
+				data-on:click="@post('/example/counter')"
+			>
+				Increment
+			</button>
+			<button
+				type="button"
+				class="rounded bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow hover:bg-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-400"
+				data-on:click="@post('/example/counter/reset')"
+			>
+				Reset
+			</button>
+		</section>
+	}
+}

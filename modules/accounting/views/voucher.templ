@@ -1,0 +1,59 @@
+package views
+
+import (
+	"github.com/subhasundardas/gofar/ent"
+	"github.com/subhasundardas/gofar/framework/data"
+	"github.com/subhasundardas/gofar/views/layouts"
+)
+
+templ VoucherView(title string, data *data.PaginatedResult[*ent.Journal]) {
+	@layouts.Base(title) {
+		<div class="">
+			<div class="flex items-center justify-between">
+				<h1 class="text-xl font-bold">{ title }</h1>
+				<a href="/accounting/row/new" class="win-btn">
+					<span class="font-semibold text-gray-700">
+						+ New row
+					</span>
+				</a>
+			</div>
+			@voucherTable(data.Items)
+			@voucherPagination(data)
+		</div>
+	}
+}
+
+templ voucherTable(rows []*ent.Journal) {
+	<div class="overflow-x-auto rounded border border-gray-200  mt-2">
+		<table class="min-w-full text-sm">
+			<thead class="bg-gray-50 text-gray-600 uppercase text-xs">
+				<tr>
+					<th class="w-16  text-left">Code</th>
+					<th class="text-left">Name</th>
+					<th class="text-left">Narration</th>
+					<th class="text-left">Debit</th>
+					<th class="text-left">Credit</th>
+					<th class="text-right" style="text-align: right">Action</th>
+				</tr>
+			</thead>
+			<tbody class="divide-y divide-gray-100">
+				if len(rows) == 0 {
+					<tr>
+						<td colspan="4" class="px-4 py-8 text-center text-gray-400">No ledgers found.</td>
+					</tr>
+				}
+				for _, row := range rows {
+					@voucherRow(row)
+				}
+			</tbody>
+		</table>
+	</div>
+}
+
+templ voucherRow(row *ent.Journal) {
+	<div>adasd</div>
+}
+
+templ voucherPagination(data *data.PaginatedResult[*ent.Journal]) {
+	<div>adasd</div>
+}

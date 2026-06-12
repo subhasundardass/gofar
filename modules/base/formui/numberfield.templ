@@ -1,0 +1,59 @@
+package formui
+
+import "github.com/subhasundardas/gofar/framework/form"
+
+// NumberField renders <input type="number"> with the standard step/min/max
+// trio of HTML attributes. Step defaults to "any" (set by DefaultProps),
+// so integer-looking fields will need Step = "1" via per-field props.
+templ NumberField(field form.UIField, props FieldProps) {
+	<div
+		class={ props.WrapperClass }
+		id={ wrapperID(field.Key) }
+		if !field.Visible {
+			hidden
+		}
+	>
+		if field.Meta.Label != "" {
+			<label
+				for={ fieldID(field, props) }
+				class={ "block text-sm font-medium text-gray-700 mb-1 " + props.LabelClass }
+			>
+				{ field.Meta.Label }
+				if field.Meta.Required {
+					<span class="text-red-500 ml-0.5" aria-hidden="true">*</span>
+				}
+			</label>
+		}
+		<input
+			type="number"
+			id={ fieldID(field, props) }
+			name={ field.Key }
+			value={ field.Value }
+			class={ props.Class }
+			placeholder={ props.Placeholder }
+			step={ props.Step }
+			min={ props.Min }
+			max={ props.Max }
+			tabindex={ props.TabIndex }
+			disabled?={ props.ResolveDisabled(field.Writable) }
+			readonly?={ props.ResolveReadonly(field.Writable) }
+			autofocus?={ props.AutoFocus }
+			aria-invalid?={ field.Error != "" }
+			aria-errormessage={ errorID(field.Key) }
+			aria-describedby={ hintID(field.Key) }
+			if props.AriaLabel != "" {
+				aria-label={ props.AriaLabel }
+			}
+			if props.Endpoint != "" {
+				data-on:input__debounce.250ms={ liveUpdateAttr(props.Endpoint) }
+			}
+			data-bind={ field.Key }
+		/>
+		if props.HintText != "" && field.Error == "" {
+			<p id={ hintID(field.Key) } class="mt-1 text-xs text-gray-500">{ props.HintText }</p>
+		}
+		if field.Error != "" {
+			<p id={ errorID(field.Key) } class="mt-1 text-sm text-red-500" role="alert">{ field.Error }</p>
+		}
+	</div>
+}

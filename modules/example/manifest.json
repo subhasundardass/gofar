@@ -1,0 +1,8 @@
+{
+  "name":        "example",
+  "version":     "1.0.0",
+  "description": "Example module",
+  "author":      "",
+  "enabled":     true,
+  "depends_on": ["base"]
+}

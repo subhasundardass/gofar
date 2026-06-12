@@ -1,0 +1,15 @@
+package views
+
+import "github.com/subhasundardas/gofar/framework/form"
+import "github.com/subhasundardas/gofar/modules/base/formui"
+
+templ ExampleForm(fields []form.UIField) {
+	<div>
+		<form method="POST" action="/example/form" class="space-y-4">
+			for _, field := range fields {
+				@formui.Field(field, formui.DefaultProps())
+			}
+			<button type="submit">Submit</button>
+		</form>
+	</div>
+}

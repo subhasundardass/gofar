@@ -1,0 +1,50 @@
+# -----------------------------------------------------------------------------
+# Air Configuration for GoFar
+# Live reload for Go + Fiber + templ applications
+# -----------------------------------------------------------------------------
+
+root = "."
+tmp_dir = "tmp"
+
+[build]
+# Binary output path
+bin = "tmp/main"
+
+# Build command (your entrypoint)
+# `templ generate` runs FIRST so the generated _templ.go files exist,
+# then `go build` compiles the server.
+cmd = "templ generate && go build -o tmp/main ./cmd/server"
+
+# Watch these file extensions
+# IMPORTANT: "templ" MUST be included or Air ignores changes to .templ files
+include_ext = ["go", "templ", "tpl", "tmpl", "html"]
+
+# Ignore these directories
+exclude_dir = ["tmp", "vendor", "bin", "node_modules", "static", "storage", "ent"]
+
+# Delay before rebuild (ms) - gives editors time to finish writing
+delay = 1000
+
+# Stop running process before rebuild
+kill_delay = 500
+
+# Send interrupt signal before kill (graceful shutdown)
+send_interrupt = true
+
+# Stop the server if `templ generate` or `go build` fails
+stop_on_error = true
+
+# Log build errors
+log = "air_errors.log"
+
+[log]
+time = true
+
+[color]
+main = "magenta"
+watcher = "cyan"
+build = "yellow"
+runner = "green"
+
+[misc]
+clean_on_exit = true

@@ -1,0 +1,65 @@
+package formui
+
+import "github.com/subhasundardas/gofar/framework/form"
+
+// TextField renders a single-line text input. It's the workhorse widget
+// for type=text, email, password, url, tel, date, time, datetime-local,
+// file, image, color, range, and hidden — the dispatcher in field.templ
+// routes all of those here.
+//
+// Accessibility: a <label for=…> is rendered before the input whenever
+// field.Meta.Label is non-empty. The hint and error paragraphs are
+// referenced from aria-describedby / aria-errormessage so screen-readers
+// announce them at the right moment.
+templ TextField(field form.UIField, props FieldProps) {
+	<div
+		class={ props.WrapperClass }
+		id={ wrapperID(field.Key) }
+		if !field.Visible {
+			hidden
+		}
+	>
+		if field.Meta.Label != "" {
+			<label
+				for={ fieldID(field, props) }
+				class={ "block text-sm font-medium text-gray-700 mb-1 " + props.LabelClass }
+			>
+				{ field.Meta.Label }
+				if field.Meta.Required {
+					<span class="text-red-500 ml-0.5" aria-hidden="true">*</span>
+				}
+			</label>
+		}
+		<input
+			type={ fieldType(field.Meta.Type) }
+			id={ fieldID(field, props) }
+			name={ field.Key }
+			class={ props.Class }
+			value={ field.Value }
+			placeholder={ props.Placeholder }
+			tabindex={ props.TabIndex }
+			disabled?={ props.ResolveDisabled(field.Writable) }
+			readonly?={ props.ResolveReadonly(field.Writable) }
+			autofocus?={ props.AutoFocus }
+			aria-invalid?={ field.Error != "" }
+			aria-errormessage={ errorID(field.Key) }
+			aria-describedby={ hintID(field.Key) }
+			if props.AriaLabel != "" {
+				aria-label={ props.AriaLabel }
+			}
+			if props.AutoComplete != "" {
+				autocomplete={ props.AutoComplete }
+			}
+			if props.Endpoint != "" {
+				data-on:input__debounce.250ms={ liveUpdateAttr(props.Endpoint) }
+			}
+			data-bind={ field.Key }
+		/>
+		if props.HintText != "" && field.Error == "" {
+			<p id={ hintID(field.Key) } class="mt-1 text-xs text-gray-500">{ props.HintText }</p>
+		}
+		if field.Error != "" {
+			<p id={ errorID(field.Key) } class="mt-1 text-sm text-red-500" role="alert">{ field.Error }</p>
+		}
+	</div>
+}

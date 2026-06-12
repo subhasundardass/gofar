@@ -1,0 +1,23 @@
+package layouts
+
+templ Sidebar() {
+	<aside class="h-full flex flex-col bg-base-100">
+		<div class="p-2 font-semibold border-b border-gray-300">
+			Modules
+		</div>
+		<nav class="flex flex-col text-sm">
+			<a class="p-2 hover:bg-base-200" href="/customers">
+				Customers
+			</a>
+			<a class="p-2 hover:bg-base-200" href="/items">
+				Items
+			</a>
+			<a class="p-2 hover:bg-base-200" href="/invoices">
+				Invoices
+			</a>
+			<a class="p-2 hover:bg-base-200" href="/reports">
+				Reports
+			</a>
+		</nav>
+	</aside>
+}

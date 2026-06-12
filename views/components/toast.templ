@@ -1,0 +1,13 @@
+package components
+
+templ Toast() {
+	<div
+		id="toast"
+		data-show="$toast.visible"
+		data-on-load="setTimeout(() => $toast.visible = false, 3000)"
+		class="fixed bottom-4 right-4 px-4 py-2 rounded text-white shadow-lg"
+	>
+		<span data-text="$toast.message"></span>
+		<button data-on-click="$toast.visible = false">✕</button>
+	</div>
+}

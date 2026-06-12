@@ -1,0 +1,58 @@
+package layouts
+
+import "github.com/subhasundardas/gofar/views/components"
+
+templ Base(title string) {
+	<!DOCTYPE html>
+	<html class="h-screen">
+		<head>
+			<title>{ title }</title>
+			<meta charset="UTF-8"/>
+			<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+			<link rel="manifest" href="/manifest.webmanifest"/>
+			<meta name="theme-color" content="#2563eb"/>
+			<meta name="mobile-web-app-capable" content="yes"/>
+			<meta name="apple-mobile-web-app-capable" content="yes"/>
+			<meta name="apple-mobile-web-app-status-bar-style" content="default"/>
+			<link rel="icon" href="/assets/icons/icon-192.png"/>
+			<link rel="stylesheet" href="/assets/css/app.css"/>
+			<script type="module" src="/assets/js/datastar.js"></script>
+		</head>
+		<body
+			class="h-screen flex flex-col overflow-hidden"
+			data-signals='{
+				"toast": {
+					"message": "",
+					"level": "success",
+					"visible": false
+				}
+			}'
+		>
+			<div class="shrink-0">
+				@Header()
+			</div>
+			<div class="shrink-0">
+				@Toolbar()
+			</div>
+			<main class="flex flex-1 min-h-0 overflow-hidden">
+				<section class="flex-1 min-h-0 overflow-auto w-full">
+					<div class="p-2 w-full">
+						{ children... }
+					</div>
+				</section>
+				<aside class="w-64 shrink-0 border-l border-gray-300 overflow-auto bg-base-100">
+					@Sidebar()
+				</aside>
+			</main>
+			<div class="shrink-0">
+				@Footer()
+			</div>
+			@components.Toast()
+			<script>
+				if ("serviceWorker" in navigator) {
+					navigator.serviceWorker.register("/sw.js");
+				}
+			</script>
+		</body>
+	</html>
+}

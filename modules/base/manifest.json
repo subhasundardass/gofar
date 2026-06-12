@@ -1,0 +1,8 @@
+{
+  "name":        "base",
+  "version":     "1.0.0",
+  "description": "Cross-cutting module: shared form widgets, pagination, search and lookup helpers. Listed in depends_on by every domain module that needs these utilities.",
+  "author":      "",
+  "enabled":     true,
+  "depends_on": [""]
+}

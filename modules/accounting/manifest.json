@@ -1,0 +1,8 @@
+{
+  "name":        "accounting",
+  "version":     "1.0.0",
+  "description": "Accounting module",
+  "author":      "",
+  "enabled":     true,
+  "depends_on": ["base"]
+}
