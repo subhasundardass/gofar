@@ -38,6 +38,7 @@ func MergeFragmentTemplSSE(sse *datastar.ServerSentEventGenerator, component tem
 
 // MergeFragmentTempl opens an SSE stream and immediately pushes a single templ
 // component as a patched element.
+// If you don't specify any options, Datastar will use its default patch behavior.
 func MergeFragmentTempl(c *fiber.Ctx, component templ.Component, opts ...datastar.PatchElementOption) error {
 	return SSE(c, func(sse *datastar.ServerSentEventGenerator) error {
 		return sse.PatchElementTempl(component, opts...)

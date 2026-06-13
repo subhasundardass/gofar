@@ -6,24 +6,24 @@ import (
 	"github.com/subhasundardas/gofar/views/layouts"
 )
 
-templ VoucherView(title string, data *data.PaginatedResult[*ent.Journal]) {
+templ JournalView(title string, data *data.PaginatedResult[*ent.Journal]) {
 	@layouts.Base(title) {
 		<div class="">
 			<div class="flex items-center justify-between">
 				<h1 class="text-xl font-bold">{ title }</h1>
-				<a href="/accounting/row/new" class="win-btn">
+				<a href={ templ.SafeURL("/accounting/journal/new") } class="win-btn">
 					<span class="font-semibold text-gray-700">
 						+ New row
 					</span>
 				</a>
 			</div>
-			@voucherTable(data.Items)
-			@voucherPagination(data)
+			@journalTable(data.Items)
+			@journalPagination(data)
 		</div>
 	}
 }
 
-templ voucherTable(rows []*ent.Journal) {
+templ journalTable(rows []*ent.Journal) {
 	<div class="overflow-x-auto rounded border border-gray-200  mt-2">
 		<table class="min-w-full text-sm">
 			<thead class="bg-gray-50 text-gray-600 uppercase text-xs">
@@ -43,17 +43,17 @@ templ voucherTable(rows []*ent.Journal) {
 					</tr>
 				}
 				for _, row := range rows {
-					@voucherRow(row)
+					@journalRow(row)
 				}
 			</tbody>
 		</table>
 	</div>
 }
 
-templ voucherRow(row *ent.Journal) {
+templ journalRow(row *ent.Journal) {
 	<div>adasd</div>
 }
 
-templ voucherPagination(data *data.PaginatedResult[*ent.Journal]) {
+templ journalPagination(data *data.PaginatedResult[*ent.Journal]) {
 	<div>adasd</div>
 }

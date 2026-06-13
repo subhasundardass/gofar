@@ -73,3 +73,15 @@ func (f *Form) Keys() []string {
 	}
 	return out
 }
+
+// build a map keyed by field name.
+// Example: fieldMap := form.BuildUIFieldMap(fields)
+func BuildUIFieldMap(fields []UIField) map[string]UIField {
+	result := make(map[string]UIField, len(fields))
+
+	for _, field := range fields {
+		result[field.Key] = field
+	}
+
+	return result
+}

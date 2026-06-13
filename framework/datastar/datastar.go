@@ -70,6 +70,46 @@ func fiberToHTTP(c *fiber.Ctx) (http.ResponseWriter, *http.Request, error) {
 	return &fiberResponseWriter{c: c}, r, nil
 }
 
+// SSE creates a Datastar Server-Sent Events stream for the current Fiber request.
+//
+// This function is the low-level foundation used by all GoFar Datastar helpers.
+// It converts the current Fiber request into a standard net/http request,
+// initializes a Datastar ServerSentEventGenerator, and streams events back
+// to the browser.
+//
+// Most applications should use higher-level helpers such as:
+//
+//	datastar.MergeFragmentTempl()
+//	datastar.MergeFragments()
+//	datastar.RemoveFragments()
+//
+// instead of calling SSE directly.
+//
+// Use SSE when you need to send multiple Datastar events within a single
+// request.
+//
+// Example:
+//
+//	return datastar.SSE(c, func(sse *datastar.ServerSentEventGenerator) error {
+//
+//	    if err := datastar.MergeFragmentTemplSSE(
+//	        sse,
+//	        views.JournalEntryRow(index, ledgers),
+//	        datastar.WithSelectorID("entry-body"),
+//	        datastar.WithModeAppend(),
+//	    ); err != nil {
+//	        return err
+//	    }
+//
+//	    return sse.MergeSignals(map[string]any{
+//	        "message": "Row added successfully",
+//	    })
+//	})
+//
+// Result:
+//   - Appends a new journal row
+//   - Sends a success signal
+//   - Uses a single SSE response
 func SSE(c *fiber.Ctx, fn func(*datastar.ServerSentEventGenerator) error) error {
 	w, r, err := fiberToHTTP(c)
 	if err != nil {

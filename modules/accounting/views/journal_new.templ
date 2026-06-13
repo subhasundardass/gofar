@@ -1,0 +1,308 @@
+package views
+
+import (
+	"fmt"
+	"github.com/subhasundardas/gofar/framework/form"
+	"github.com/subhasundardas/gofar/modules/base/formui"
+	"github.com/subhasundardas/gofar/views/layouts"
+)
+
+// JournalEntryLine represents a single row in the multi-line journal entry grid.
+type JournalEntryLine struct {
+	Type       string // "D" = Debit, "C" = Credit
+	LedgerID   string
+	LedgerName string
+	Narration  string
+	Amount     string
+}
+
+type JournalProps struct {
+	Title       string
+	Fields      []form.UIField
+	FieldMap    map[string]form.UIField
+	InitialRows int
+	Ledgers     []form.Option
+}
+
+templ JournalNew(props JournalProps) {
+	@layouts.Base(props.Title) {
+		<div class="flex items-center justify-between mb-2">
+			<h1 class="text-xl font-bold">{ props.Title }</h1>
+			<div class="flex gap-2">
+				<a href={ templ.SafeURL("/accounting/journal") } class="win-btn">
+					<span class="font-semibold text-gray-700">+ List</span>
+				</a>
+			</div>
+		</div>
+		<div style="width: 80%">
+			@journalEntryForm(props)
+		</div>
+	}
+}
+
+// journalEntryForm is the full form with header + multi-line entry grid
+// + footer (narration + totals + save).
+templ journalEntryForm(props JournalProps) {
+	@journalHeader(props)
+	// @journalEntryGrid(ledgers)
+	// @journalFooter()
+	// @journalEntryGrid(ledgers)
+	@JournalEntryForm(props)
+	@journalFooter()
+}
+
+// journalHeader renders the date + journal no fields.
+templ journalHeader(props JournalProps) {
+	<fieldset class="border border-gray-300 rounded-md p-4">
+		<legend class="px-2 text-sm font-semibold text-gray-700">Journal Information</legend>
+		<div class="flex flex-row gap-2 justify-between">
+			<div class="flex gap-4 items-center">
+				<div class="flex gap-2 items-center flex-1">
+					<label for={ props.FieldMap["jr_date"].Meta.Label } class="w-32 shrink-0">{ props.FieldMap["jr_date"].Meta.Label }</label>
+					<span class="shrink-0">:</span>
+					@formui.Field(props.FieldMap["jr_date"], formui.DefaultProps())
+				</div>
+			</div>
+			<div class="flex gap-4 items-center">
+				<div class="flex gap-2 items-center flex-1">
+					<label for={ props.FieldMap["jr_no"].Meta.Label } class="w-32 shrink-0">{ props.FieldMap["jr_no"].Meta.Label }</label>
+					<span class="shrink-0">:</span>
+					@formui.Field(props.FieldMap["jr_no"], formui.DefaultProps())
+				</div>
+				<div class="flex gap-2 items-center flex-1">
+					<label for={ props.FieldMap["ref_no"].Meta.Label } class="w-32 shrink-0">{ props.FieldMap["ref_no"].Meta.Label }</label>
+					<span class="shrink-0">:</span>
+					@formui.Field(props.FieldMap["ref_no"], formui.DefaultProps())
+				</div>
+			</div>
+		</div>
+	</fieldset>
+}
+
+// journalEntryGrid renders the multi-line entry table.
+//
+// Each row has 5 cells:
+//   1. Type (D / C select)
+//   2. Ledger (lookup combobox bound to the seeded ledgers)
+//   3. Narration (text input)
+//   4. Amount (number input)
+//   5. Remove button
+//
+// Adding a row pushes a new object onto `lines` and bumps `nextId`.
+// Removing a row splices the array out by id.
+// templ journalEntryGrid(ledgers []form.Option) {
+// 	<fieldset class="border border-gray-300 rounded-md p-4">
+// 		<legend class="px-2 text-sm font-semibold text-gray-700">Entry</legend>
+// 		<div class="overflow-x-auto rounded border border-gray-200">
+// 			<table class="min-w-full text-sm">
+// 				<thead class="bg-gray-50 text-gray-600 uppercase text-xs">
+// 					<tr>
+// 						<th class="w-12 text-center">#</th>
+// 						<th class="w-24 text-left">Type</th>
+// 						<th class="text-left">Ledger</th>
+// 						<th class="text-left">Particulars</th>
+// 						<th class="w-32 text-right">Amount</th>
+// 						<th class="w-12 text-center">—</th>
+// 					</tr>
+// 				</thead>
+// 				<tbody class="divide-y divide-gray-100">
+// 					@journalEntryRowTemplate(ledgers)
+// 				</tbody>
+// 				<tfoot class="bg-gray-50">
+// 					<tr>
+// 						<td colspan="4" class="px-2 py-2 text-right text-xs font-semibold text-gray-600 uppercase">Totals</td>
+// 						<td class="px-2 py-2 text-right">
+// 							<div class="flex flex-col text-xs leading-tight">
+// 								<span class="text-green-700">Dr: <span data-text="totalDebit.toFixed(2)">0.00</span></span>
+// 								<span class="text-red-700">Cr: <span data-text="totalCredit.toFixed(2)">0.00</span></span>
+// 							</div>
+// 						</td>
+// 						<td></td>
+// 					</tr>
+// 					<tr>
+// 						<td colspan="6" class="px-2 py-2">
+// 							<div class="text-xs font-semibold">
+// 								<span class="text-red-600" data-show="!balanced">
+// 									⚠ Debit and Credit do not match (diff: <span data-text="diff.toFixed(2)">0.00</span>)
+// 								</span>
+// 								<span class="text-green-600" data-show="balanced">
+// 									✓ Debit and Credit are balanced
+// 								</span>
+// 							</div>
+// 						</td>
+// 					</tr>
+// 				</tfoot>
+// 			</table>
+// 		</div>
+// 		<div class="mt-2 flex justify-between items-center">
+// 			<button
+// 				type="button"
+// 				class="win-btn"
+// 				data-on:click="lines = [...lines, { id: nextId, type: 'D', ledger: '', narration: '', amount: '' }]; nextId++"
+// 			>
+// 				<span class="font-semibold text-gray-700">+ Add Line</span>
+// 			</button>
+// 			<div class="text-xs text-gray-500" data-text="lines.length + ' line(s)'">0 line(s)</div>
+// 		</div>
+// 	</fieldset>
+// }
+
+// journalEntryRowTemplate renders the per-row template bound to the
+// `lines` signal. The expression `data-bind="type"` etc. keeps the
+// inputs in sync with the array element, and the data-on:click
+// handler on the remove button splices the row out by id.
+// templ journalEntryRowTemplate(ledgers []form.Option) {
+// 	<template data-bind-each="lines">
+// 		<tr>
+// 			<td class="px-2 py-2 text-center text-gray-500" data-text="(lines.indexOf(lines.find(l => l.id === lines[$index].id)) + 1)">1</td>
+// 			<td class="px-2 py-2">
+// 				<select
+// 					class="w-full rounded-md border border-gray-300 bg-white px-2 py-1 text-sm"
+// 					data-bind="type"
+// 				>
+// 					<option value="D">Debit</option>
+// 					<option value="C">Credit</option>
+// 				</select>
+// 			</td>
+// 			<td class="px-2 py-2">
+// 				<select
+// 					class="w-full rounded-md border border-gray-300 bg-white px-2 py-1 text-sm"
+// 					data-bind="ledger"
+// 				>
+// 					<option value="">— select ledger —</option>
+// 					for _, l := range ledgers {
+// 						<option value={ l.Value }>{ l.Label }</option>
+// 					}
+// 				</select>
+// 			</td>
+// 			<td class="px-2 py-2">
+// 				<input
+// 					type="text"
+// 					class="w-full rounded-md border border-gray-300 px-2 py-1 text-sm"
+// 					placeholder="Narration"
+// 					data-bind="narration"
+// 				/>
+// 			</td>
+// 			<td class="px-2 py-2">
+// 				<input
+// 					type="number"
+// 					step="0.01"
+// 					class="w-full rounded-md border border-gray-300 px-2 py-1 text-sm text-right"
+// 					placeholder="0.00"
+// 					data-bind="amount"
+// 				/>
+// 			</td>
+// 			<td class="px-2 py-2 text-center">
+// 				<button
+// 					type="button"
+// 					class="text-red-500 hover:text-red-700 text-sm"
+// 					title="Remove line"
+// 					aria-label="Remove line"
+// 					data-on:click="lines = lines.filter(l => l.id !== lines[$index].id)"
+// 				>✕</button>
+// 			</td>
+// 		</tr>
+// 	</template>
+// }
+templ JournalEntryForm(props JournalProps) {
+	<fieldset class="border border-gray-300 rounded-md mt-4 p-4">
+		<legend class="px-2 text-sm font-semibold text-gray-700">Entry</legend>
+		<div
+			id="je-wrapper"
+			data-signals={ fmt.Sprintf(`{"rowCount": %d}`, props.InitialRows) }
+		>
+			<div class="min-w-full text-sm" id="entry-body">
+				for i := range props.InitialRows {
+					@JournalEntryRow(i+1, props.Ledgers)
+				}
+			</div>
+			<button
+				class="win-btn mt-2"
+				data-on:click="@get('/accounting/journal/new/newrow?index=' + ($rowCount + 1))"
+			>
+				Add Row
+			</button>
+		</div>
+	</fieldset>
+}
+
+templ JournalEntryRow(index int, ledgers []form.Option) {
+	<div
+		id={ fmt.Sprintf("row-%d", index) }
+		class="flex items-center gap-2 py-1"
+	>
+		<div class="w-28 shrink-0">
+			<select
+				name={ fmt.Sprintf("rows[%d][type]", index) }
+				class="w-full"
+			>
+				<option value="D">Debit</option>
+				<option value="C">Credit</option>
+			</select>
+		</div>
+		<div class="flex-1">
+			<select
+				name={ fmt.Sprintf("rows[%d][account]", index) }
+				class="w-full"
+			>
+				for _, l := range ledgers {
+					<option value={ l.Value }>{ l.Label }</option>
+				}
+			</select>
+		</div>
+		<div class="flex-1">
+			<input
+				type="text"
+				name={ fmt.Sprintf("rows[%d][desc]", index) }
+				class="w-full"
+			/>
+		</div>
+		<div class="w-32 shrink-0">
+			<input
+				type="number"
+				name={ fmt.Sprintf("rows[%d][amount]", index) }
+				class="w-full text-right"
+				step="0.01"
+			/>
+		</div>
+		<div class="w-24 shrink-0">
+			<button
+				type="button"
+				class="win-btn"
+			>
+				Remove
+			</button>
+		</div>
+	</div>
+}
+
+// journalFooter renders the overall narration + the save / reset buttons.
+templ journalFooter() {
+	// <fieldset class="border border-gray-300 rounded-md p-4">
+	// 	<legend class="px-2 text-sm font-semibold text-gray-700">Narration</legend>
+	// 	<div class="flex flex-col gap-2">
+	// 		<textarea
+	// 			name="jr_narration"
+	// 			rows="2"
+	// 			placeholder="Overall narration for this journal entry"
+	// 			class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-800 shadow-xs outline-none transition-all focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
+	// 		></textarea>
+	// 	</div>
+	// </fieldset>
+	<div class="flex justify-end mt-2">
+		<div class="flex gap-2">
+			<button
+				type="reset"
+				class="win-btn"
+			>
+				<span class="font-semibold text-gray-700">Reset</span>
+			</button>
+			<button
+				type="submit"
+				class="win-btn"
+			>
+				<span class="font-semibold text-gray-700">💾 Save Journal</span>
+			</button>
+		</div>
+	</div>
+}

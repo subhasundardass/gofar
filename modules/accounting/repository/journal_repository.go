@@ -3,21 +3,22 @@ package repository
 import (
 	"context"
 
+	"entgo.io/ent/dialect/sql"
 	"github.com/subhasundardas/gofar/ent"
 	"github.com/subhasundardas/gofar/ent/journal"
 )
 
-type VoucherRepository struct {
+type JournalRepository struct {
 	db *ent.Client
 }
 
-func NewVoucherRepository(db *ent.Client) *VoucherRepository {
-	return &VoucherRepository{db: db}
+func NewJournalRepository(db *ent.Client) *JournalRepository {
+	return &JournalRepository{db: db}
 }
 
 // ── Queries ───────────────────────────────────────────────────────────────────
 
-func (r *VoucherRepository) GetByID(
+func (r *JournalRepository) GetByID(
 	ctx context.Context,
 	id int,
 ) (*ent.Journal, error) {
@@ -28,7 +29,7 @@ func (r *VoucherRepository) GetByID(
 		Only(ctx)
 }
 
-func (r *VoucherRepository) GetByIDWithLines(
+func (r *JournalRepository) GetByIDWithLines(
 	ctx context.Context,
 	id int,
 ) (*ent.Journal, error) {
@@ -40,7 +41,7 @@ func (r *VoucherRepository) GetByIDWithLines(
 		Only(ctx)
 }
 
-func (r *VoucherRepository) List(
+func (r *JournalRepository) List(
 	ctx context.Context,
 ) ([]*ent.Journal, error) {
 
@@ -50,33 +51,28 @@ func (r *VoucherRepository) List(
 		All(ctx)
 }
 
-func (r *VoucherRepository) ListPaginated(
-	ctx context.Context,
-	offset int,
-	limit int,
-) ([]*ent.Journal, int, error) {
-
+func (r *JournalRepository) ListJournalPaginated(ctx context.Context, offset, limit int) ([]*ent.Journal, int, error) {
 	query := r.db.Journal.Query()
 
-	total, err := query.Count(ctx)
+	total, err := query.Clone().Count(ctx)
 	if err != nil {
 		return nil, 0, err
 	}
 
-	rows, err := query.
-		Order(ent.Desc(journal.FieldID)).
-		Offset(offset).
+	items, err := query.
+		Order(journal.ByID(sql.OrderDesc())).
 		Limit(limit).
+		Offset(offset).
 		All(ctx)
 
 	if err != nil {
 		return nil, 0, err
 	}
 
-	return rows, total, nil
+	return items, total, nil
 }
 
-func (r *VoucherRepository) Exists(
+func (r *JournalRepository) Exists(
 	ctx context.Context,
 	id int,
 ) (bool, error) {
@@ -89,7 +85,7 @@ func (r *VoucherRepository) Exists(
 
 // ── Actions ───────────────────────────────────────────────────────────────────
 
-func (r *VoucherRepository) Create(
+func (r *JournalRepository) Create(
 	ctx context.Context,
 	input *ent.Journal,
 ) (*ent.Journal, error) {
@@ -102,7 +98,7 @@ func (r *VoucherRepository) Create(
 		Save(ctx)
 }
 
-func (r *VoucherRepository) Update(
+func (r *JournalRepository) Update(
 	ctx context.Context,
 	id int,
 	input *ent.Journal,
@@ -115,7 +111,7 @@ func (r *VoucherRepository) Update(
 		Save(ctx)
 }
 
-func (r *VoucherRepository) Delete(
+func (r *JournalRepository) Delete(
 	ctx context.Context,
 	id int,
 ) error {

@@ -3,10 +3,14 @@
 package handler
 
 import (
+	"strconv"
+	"time"
+
 	"github.com/gofiber/fiber/v2"
 	"github.com/subhasundardas/gofar/framework/data"
+	"github.com/subhasundardas/gofar/framework/datastar"
+	"github.com/subhasundardas/gofar/framework/form"
 	"github.com/subhasundardas/gofar/framework/render"
-	"github.com/subhasundardas/gofar/framework/request"
 	"github.com/subhasundardas/gofar/framework/response"
 	"github.com/subhasundardas/gofar/modules/accounting/service"
 	"github.com/subhasundardas/gofar/modules/accounting/views"
@@ -20,14 +24,17 @@ type Handlers struct {
 // NewHandlers constructs all handler sets. Takes services only — never fiber.App.
 func NewHandlers(svc *service.Services) *Handlers {
 	return &Handlers{
-		Accounting: &AccountingHandlers{svc: svc.Accounting},
+		Accounting: &AccountingHandlers{
+			svc:   svc.Accounting,
+			jrSvc: svc.Journal,
+		},
 	}
 }
 
 // AccountingHandlers holds all Accounting HTTP handlers.
 type AccountingHandlers struct {
 	svc   *service.AccountingService
-	vcSvc *service.VoucherServices
+	jrSvc *service.JournalServices
 }
 
 // -- Chart of Account
@@ -58,98 +65,134 @@ func (h *AccountingHandlers) ListLedger(c *fiber.Ctx) error {
 	return render.Component(c, views.LedgerView("Ledger Master", result))
 }
 
-// -- Voucher
-func (h *AccountingHandlers) VoucherList(c *fiber.Ctx) error {
+// -- Journal
+func (h *AccountingHandlers) ListJournal(c *fiber.Ctx) error {
 	params := data.PaginationParams{
 		Page:    c.QueryInt("page", 1),
 		PerPage: c.QueryInt("per_page", 20),
 		Search:  c.Query("q"),
 	}
-	result, err := h.vcSvc.ListVouchers(c.Context(), params)
+	result, err := h.jrSvc.ListJournal(c.Context(), params)
 	if err != nil {
 		return response.Error(c, err)
 	}
 
-	return render.Component(c, views.VoucherView("Voucher Master", result))
+	return render.Component(c, views.JournalView("Journal Master", result))
 }
 
-// List handles GET /accounting
-//
-//	200 OK → { success: true, data: [...] }
-func (h *AccountingHandlers) List(c *fiber.Ctx) error {
-	items, err := h.svc.List()
+func (h *AccountingHandlers) NewJournal(c *fiber.Ctx) error {
+	jr := form.New("Journal")
+	jr.Fields(
+		form.DateField{BaseField: form.BaseField{
+			Key:      "jr_date",
+			Type:     "date",
+			Label:    "Entry Date",
+			Required: true,
+			DefaultValue: func() time.Time {
+				return time.Now()
+			},
+			Validators: []form.Validator{
+				form.RequiredValidator{Field: "jr_date"},
+				form.BetweenLengthValidator{Field: "jr_date"},
+			},
+		}},
+		form.TextField{BaseField: form.BaseField{
+			Key:          "jr_no",
+			Type:         "text",
+			Label:        "Journal No",
+			Required:     true,
+			Placeholder:  "30",
+			HelpText:     "Enter Journal no",
+			DefaultValue: 25,
+			Validators: []form.Validator{
+				form.RequiredValidator{Field: "jr_no"},
+				form.BetweenLengthValidator{Field: "jr_no"},
+			},
+		}},
+		form.TextField{BaseField: form.BaseField{
+			Key:          "ref_no",
+			Type:         "text",
+			Label:        "Refference No",
+			Required:     true,
+			Placeholder:  "30",
+			HelpText:     "Enter Refference no",
+			DefaultValue: "SALE-25",
+			Validators: []form.Validator{
+				form.RequiredValidator{Field: "ref_no"},
+				form.BetweenLengthValidator{Field: "ref_no"},
+			},
+		}},
+	)
+
+	inst := form.NewInstance(jr)
+	fields := form.BuildUIFields(jr, inst)
+	fieldMap := form.BuildUIFieldMap(fields)
+
+	// Build the ledger option list for the entry rows' <select> widgets.
+	ledgers, err := h.svc.ListAllLedgers(c.Context())
 	if err != nil {
 		return response.Error(c, err)
 	}
-	return response.OK(c, items)
+	ledgerOptions := make([]form.Option, 0, len(ledgers))
+	for _, l := range ledgers {
+		ledgerOptions = append(ledgerOptions, form.Option{
+			Value: strconv.Itoa(l.ID),
+			Label: l.Name,
+		})
+	}
+
+	// initialRows := 2
+
+	// type Props struct{
+	// 	title string
+	// 	fields []form.UIField
+	// 	fieldMap map[string]form.UIField
+	// 	initialRows int8
+	// 	ledgers []form.Option
+	// }
+
+	// props := Props{
+	// 	title: "New Journal",
+	// 	fields: fields,
+	// 	fieldMap: fieldMap,
+	// 	initialRows: 2,
+	// 	ledgers:  []form.Option,
+
+	// }
+	props := views.JournalProps{
+		Title:       "New Journal",
+		Fields:      fields,
+		FieldMap:    fieldMap,
+		InitialRows: 2,
+		Ledgers:     ledgerOptions,
+	}
+
+	// fmt.Printf("%s", props)
+
+	return render.Component(c, views.JournalNew(props))
+	// return render.Component(c, views.JournalEntryForm(ledgerOptions, initialRows))
 }
 
-// Create handles POST /accounting
-//
-//	Body:         { "name": "..." }
-//	201 Created → { success: true, data: { id: N } }
-func (h *AccountingHandlers) Create(c *fiber.Ctx) error {
-	type body struct {
-		Name string `json:"name"`
-	}
-	dto, err := request.Parse[body](c)
+func (h *AccountingHandlers) AddRow(c *fiber.Ctx) error {
+	index := c.QueryInt("index", 1)
+	ledgers, err := h.svc.ListAllLedgers(c.Context())
 	if err != nil {
 		return response.Error(c, err)
 	}
-	id, err := h.svc.Create(dto.Name)
-	if err != nil {
-		return response.Error(c, err)
+	ledgerOptions := make([]form.Option, 0, len(ledgers))
+	for _, l := range ledgers {
+		ledgerOptions = append(ledgerOptions, form.Option{
+			Value: strconv.Itoa(l.ID),
+			Label: l.Name,
+		})
 	}
-	return response.Created(c, fiber.Map{"id": id})
-}
 
-// Get handles GET /accounting/:id
-//
-//	200 OK → { success: true, data: {...} }
-func (h *AccountingHandlers) Get(c *fiber.Ctx) error {
-	id, err := request.ParamInt(c, "id")
-	if err != nil {
-		return response.Error(c, err)
-	}
-	item, err := h.svc.Get(id)
-	if err != nil {
-		return response.Error(c, err)
-	}
-	return response.OK(c, item)
-}
+	return datastar.MergeFragmentTempl(
+		c,
+		views.JournalEntryRow(index, ledgerOptions),
 
-// Update handles PUT /accounting/:id
-//
-//	Body:   { "name": "..." }
-//	200 OK → { success: true, data: { updated: true } }
-func (h *AccountingHandlers) Update(c *fiber.Ctx) error {
-	id, err := request.ParamInt(c, "id")
-	if err != nil {
-		return response.Error(c, err)
-	}
-	type body struct {
-		Name string `json:"name"`
-	}
-	dto, err := request.Parse[body](c)
-	if err != nil {
-		return response.Error(c, err)
-	}
-	if err := h.svc.Update(id, dto.Name); err != nil {
-		return response.Error(c, err)
-	}
-	return response.OK(c, fiber.Map{"updated": true})
-}
+		datastar.WithSelector("#entry-body"),
+		datastar.WithModeAppend(),
+	)
 
-// Delete handles DELETE /accounting/:id
-//
-//	204 No Content on success
-func (h *AccountingHandlers) Delete(c *fiber.Ctx) error {
-	id, err := request.ParamInt(c, "id")
-	if err != nil {
-		return response.Error(c, err)
-	}
-	if err := h.svc.Delete(id); err != nil {
-		return response.Error(c, err)
-	}
-	return response.NoContent(c)
 }

@@ -23,6 +23,7 @@ import (
 // Registry exposes all framework-provided services to modules.
 // Obtain one via mgr.Services() inside Register or Boot.
 type Registry struct {
+	*BaseService
 	c *container.Container
 }
 

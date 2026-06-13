@@ -15,14 +15,14 @@ import (
 // Pass the whole struct to service.NewServices so adding a repo never changes signatures.
 type Repositories struct {
 	Accounting *AccountingRepository
-	Voucher    *VoucherRepository
+	Journal    *JournalRepository
 }
 
 // NewRepositories constructs all repositories.
 func NewRepositories(db *ent.Client) *Repositories {
 	return &Repositories{
 		Accounting: NewAccountingRepository(db),
-		Voucher:    NewVoucherRepository(db),
+		Journal:    NewJournalRepository(db),
 	}
 }
 
@@ -122,4 +122,16 @@ func (r *AccountingRepository) ListLedgersPaginated(ctx context.Context, offset,
 	}
 
 	return items, total, nil
+}
+
+// ListAllLedgers returns every active ledger ordered by code. Used by
+// dropdowns and lookup widgets where pagination is unwanted.
+func (r *AccountingRepository) ListAllLedgers(ctx context.Context) ([]*ent.Ledger, error) {
+	items, err := r.db.Ledger.Query().
+		Order(ledger.ByCode()).
+		All(ctx)
+	if err != nil {
+		return nil, err
+	}
+	return items, nil
 }

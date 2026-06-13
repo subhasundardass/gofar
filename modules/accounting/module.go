@@ -43,29 +43,6 @@ func init() {
 	module.Register(New)
 }
 
-// Register binds infrastructure into the shared container.
-// Called before Boot — do NOT resolve cross-module services here.
-// func (m *Module) Register(mgr *module.Manager) error {
-// 	m.Logger.Info("registering")
-
-// 	// Wire: repo → service → handler (each layer depends on the one below).
-// 	// The *ent.Client is registered in the container by the framework's
-// 	// setupDatabase step (see framework/app/bootstrap.go), which now runs
-// 	// before setupModules so the client is guaranteed to be available
-// 	// here.
-// 	db := container.MustResolve[*ent.Client](mgr.Context.Container)
-
-// 	m.repos = repository.NewRepositories(db)
-// 	mgr.Context.Container.Register(m.repos)
-
-// 	m.services = service.NewServices(m.repos)
-// 	mgr.Context.Container.Register(m.services)
-
-// 	m.handlers = handler.NewHandlers(m.services)
-// 	mgr.Context.Container.Register(m.handlers)
-
-//		return nil
-//	}
 func (m *Module) Register(mgr *module.Manager) error {
 
 	// Init Gofar and its services
@@ -78,7 +55,7 @@ func (m *Module) Register(mgr *module.Manager) error {
 	// svc.Store().Set("name", "Subha")
 
 	m.repos = repository.NewRepositories(svc.DB())
-	m.services = service.NewServices(m.repos, svc.Logger())
+	m.services = service.NewServices(m.repos)
 	m.handlers = handler.NewHandlers(m.services)
 
 	svc.Logger().Infof("%s: registered", m.Name())

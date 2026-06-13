@@ -8,7 +8,6 @@ import (
 
 	"github.com/subhasundardas/gofar/ent"
 	"github.com/subhasundardas/gofar/framework/data"
-	"github.com/subhasundardas/gofar/framework/logger"
 	"github.com/subhasundardas/gofar/framework/services"
 	"github.com/subhasundardas/gofar/modules/accounting/repository"
 )
@@ -16,15 +15,14 @@ import (
 // Services bundles all Accounting domain services.
 type Services struct {
 	Accounting *AccountingService
-	Voucher    *VoucherServices
+	Journal    *JournalServices
 }
 
 // NewServices constructs all services, injecting the shared repository group.
-func NewServices(repos *repository.Repositories, logger *logger.Logger) *Services {
-	_ = logger // reserved for future use
+func NewServices(repos *repository.Repositories) *Services {
 	return &Services{
 		Accounting: NewAccountingService(repos.Accounting),
-		Voucher:    NewVoucherServices(repos.Voucher),
+		Journal:    NewJournalServices(repos.Journal),
 	}
 }
 
@@ -54,6 +52,7 @@ func (s *AccountingService) List() ([]repository.Accounting, error) {
 
 // Get returns a single record. Returns an error if not found.
 func (s *AccountingService) Get(id int) (*repository.Accounting, error) {
+
 	item, err := s.repo.FindByID(id)
 	if err != nil {
 		return nil, fmt.Errorf("accounting: get %d: %w", id, err)
@@ -92,4 +91,10 @@ func (s *AccountingService) ListLedgers(ctx context.Context, params data.Paginat
 		params,
 		s.repo.ListLedgersPaginated,
 	)
+}
+
+// ListAllLedgers returns every ledger ordered by code. Used by dropdowns
+// where pagination is unnecessary.
+func (s *AccountingService) ListAllLedgers(ctx context.Context) ([]*ent.Ledger, error) {
+	return s.repo.ListAllLedgers(ctx)
 }

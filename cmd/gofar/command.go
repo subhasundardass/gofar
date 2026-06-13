@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"os"
+	"os/exec"
 
 	"github.com/subhasundardas/gofar/cmd/gofar/gen"
 )
@@ -11,6 +12,16 @@ func run(args []string) int {
 	if len(args) == 0 {
 		printUsage()
 		return 0
+	}
+
+	// Check for required tools
+	if err := checkTool("air", "go install github.com/air-verse/air@latest"); err != nil {
+		fmt.Fprintln(os.Stderr, err)
+		return 1
+	}
+	if err := checkTool("templ", "go install github.com/a-h/templ/cmd/templ@latest"); err != nil {
+		fmt.Fprintln(os.Stderr, err)
+		return 1
 	}
 
 	command := args[0]
@@ -84,4 +95,14 @@ Examples:
 You can also add a Makefile target:
   make module name=Billing   →  go run ./cmd/gofar make:module name=Billing
 `)
+}
+
+// Helper functions
+
+func checkTool(name, installCmd string) error {
+	_, err := exec.LookPath(name)
+	if err != nil {
+		return fmt.Errorf("%s not found. Install with: %s", name, installCmd)
+	}
+	return nil
 }
