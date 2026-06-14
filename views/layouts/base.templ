@@ -22,11 +22,8 @@ templ Base(title string) {
 		<body
 			class="h-screen flex flex-col overflow-hidden"
 			data-signals='{
-				"toast": {
-					"message": "",
-					"level": "success",
-					"visible": false
-				}
+				"modal": { "visible": false },
+  				"toast": { "visible": false }
 			}'
 		>
 			<div class="shrink-0">
@@ -48,12 +45,22 @@ templ Base(title string) {
 			<div class="shrink-0">
 				@Footer()
 			</div>
+			@components.Modal(components.ModalProps{
+				Title:       "",
+				ShowFooter:  true,
+				ShowConfirm: true,
+				ConfirmText: "Save",
+				Width:       "md",
+			})
 			@components.Toast()
 			<script>
 				if ("serviceWorker" in navigator) {
 					navigator.serviceWorker.register("/sw.js");
 				}
 			</script>
+			<style>
+				[data-cloak] { display: none !important; }
+			</style>
 		</body>
 	</html>
 }

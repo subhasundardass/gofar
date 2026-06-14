@@ -142,7 +142,7 @@ input,
 select,
 textarea {
   @apply w-full text-sm bg-background text-foreground;
-  @apply border border-border rounded-md px-2 py-1.5;
+  @apply border border-border rounded-sm px-2 py-1.5;
   @apply outline-none transition;
   @apply font-medium;
 }
@@ -156,8 +156,9 @@ textarea:focus {
 }
 
 
+/* ─── Buttons ──────────────────────────────────────────────────── */
 .win-btn {
-  @apply text-sm px-3 py-1.5 rounded-md border border-border bg-muted text-foreground;
+  @apply text-sm px-3 py-1.5 rounded-sm border border-border bg-muted text-foreground;
   box-shadow: inset 0 1px 0 rgba(255,255,255,0.6);
   transition: all 0.15s ease;
 }
@@ -176,10 +177,94 @@ textarea:focus {
   @apply outline-none ring-1 ring-ring;
 }
 
+/* Primary - Dark Background */
+.win-btn-primary {
+  @apply text-sm px-3 py-1.5 rounded-sm border border-gray-900 bg-gray-900 text-white;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.1);
+  transition: all 0.15s ease;
+}
+
+.win-btn-primary:hover {
+  @apply bg-gray-700 border-gray-700;
+  cursor: pointer;
+}
+
+.win-btn-primary:active {
+  @apply bg-gray-800;
+  transform: translateY(1px);
+}
+
+.win-btn-primary:focus {
+  @apply outline-none ring-1 ring-gray-500;
+}
+
+/* Danger - Red */
+.win-btn-danger {
+  @apply text-sm px-3 py-1.5 rounded-sm border border-red-600 bg-red-600 text-white;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.15);
+  transition: all 0.15s ease;
+}
+
+.win-btn-danger:hover {
+  @apply bg-red-700 border-red-700;
+  cursor: pointer;
+}
+
+.win-btn-danger:active {
+  @apply bg-red-800;
+  transform: translateY(1px);
+}
+
+.win-btn-danger:focus {
+  @apply outline-none ring-1 ring-red-400;
+}
+
+/* Success - Green */
+.win-btn-success {
+  @apply text-sm px-3 py-1.5 rounded-sm border border-green-600 bg-green-600 text-white;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.15);
+  transition: all 0.15s ease;
+}
+
+.win-btn-success:hover {
+  @apply bg-green-700 border-green-700;
+  cursor: pointer;
+}
+
+.win-btn-success:active {
+  @apply bg-green-800;
+  transform: translateY(1px);
+}
+
+.win-btn-success:focus {
+  @apply outline-none ring-1 ring-green-400;
+}
+
+/* Warning - Amber */
+.win-btn-warning {
+  @apply text-sm px-3 py-1.5 rounded-sm border border-amber-400 bg-amber-400 text-gray-900;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.3);
+  transition: all 0.15s ease;
+}
+
+.win-btn-warning:hover {
+  @apply bg-amber-500 border-amber-500;
+  cursor: pointer;
+}
+
+.win-btn-warning:active {
+  @apply bg-amber-600;
+  transform: translateY(1px);
+}
+
+.win-btn-warning:focus {
+  @apply outline-none ring-1 ring-amber-300;
+}
+
 .win-icon-btn {
   @apply inline-flex items-center justify-center;
   @apply h-8;
-  @apply rounded-md;
+  @apply rounded-sm;
   @apply bg-white border border-gray-300;
   @apply shadow-sm;
   @apply transition;
@@ -211,29 +296,20 @@ table {
 /* ─── Header ─────────────────────────────────────────────────── */
 
 thead th {
-  padding: 10px 14px;
-  text-align: left;
-  font-weight: 500;
-  letter-spacing: 0.06em;
-  border-bottom: 1px solid #e5e7eb;  /* gray-200 */
-  white-space: nowrap;
-  user-select: none;
+    padding: 10px 14px;
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    border-bottom: 1px solid var(--color-border);
+    white-space: nowrap;
+    user-select: none;
+    /* color: var(--color-muted-foreground); */
+    /* Let Tailwind classes control alignment */
 }
+
 
 
 
 /* ─── Body rows ──────────────────────────────────────────────── */
-
-thead th {
-  padding: 10px 14px;
-  text-align: left;
-  font-weight: 500;
-  letter-spacing: 0.06em;
-  border-bottom: 1px solid var(--color-border);
-  white-space: nowrap;
-  user-select: none;
-  color: var(--color-muted-foreground);
-}
 
 tbody tr {
   border-bottom: 1px solid var(--color-border);

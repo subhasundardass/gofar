@@ -1,25 +1,60 @@
 package components
 
-templ Modal() {
+// ModalProps holds configuration for the modal
+type ModalProps struct {
+	Title       string
+	ShowFooter  bool
+	ShowConfirm bool
+	ConfirmText string
+	Width       string // "sm", "md", "lg"
+}
+
+templ Modal2(props ModalProps) {
 	<div
 		id="modal"
-		class="hidden fixed inset-0 z-50 overflow-y-auto"
+		class="fixed inset-0 z-[9999]"
+		style="display:none"
+		data-cloak
 		data-show="$modal.visible"
-		aria-labelledby="modal-title"
-		role="dialog"
-		aria-modal="true"
+	>
+		<!-- Backdrop -->
+		<div
+			class="absolute inset-0 bg-black/50"
+			data-on:click="$modal.visible = false"
+		></div>
+		<!-- Modal box -->
+		<div class="relative flex items-center justify-center min-h-screen p-4">
+			<div class="bg-white rounded-lg shadow-xl w-full max-w-md">
+				<div class="px-4 py-3 border-b flex justify-between">
+					<h2>sfsd</h2>
+					<button data-on:click="$modal.visible = false">
+						✕
+					</button>
+				</div>
+				<div class="p-4">
+					Modal Content
+				</div>
+			</div>
+		</div>
+	</div>
+}
+
+templ Modal(props ModalProps) {
+	<div
+		id="modal"
+		class="fixed inset-0 z-50"
+		data-show="$modal.visible"
 	>
 		<!-- Backdrop overlay -->
+		<!-- BACKDROP -->
 		<div
-			class="fixed inset-0 bg-black bg-opacity-50 transition-opacity"
-			data-on-click="$modal.visible = false"
+			class="absolute inset-0 bg-black/50"
+			data-on:click="$modal.visible=false"
 		></div>
-
 		<!-- Modal container -->
 		<div class="flex items-center justify-center min-h-screen p-4">
 			<div
 				class="relative bg-white rounded-lg shadow-xl max-w-lg w-full transform transition-all"
-				data-on-click.stop=""
 			>
 				<!-- Header -->
 				<div class="flex items-center justify-between px-6 py-4 border-b border-gray-200">
@@ -27,11 +62,19 @@ templ Modal() {
 						id="modal-title"
 						class="text-lg font-semibold text-gray-900"
 					>
-						Modal Title
+						// ① Use { } to interpolate Go values, not template expressions
+						if props.Title != "" {
+							{ props.Title }
+						} else {
+							Modal Title
+						}
 					</h3>
 					<button
 						type="button"
-						data-on-click="$modal.visible = false"
+						data-on:click="
+		console.log('CLICK WORKS');
+		$modal.visible = !$modal.visible;
+	"
 						class="text-gray-400 hover:text-gray-600 focus:outline-none transition-colors"
 						aria-label="Close modal"
 					>
@@ -41,7 +84,6 @@ templ Modal() {
 						</svg>
 					</button>
 				</div>
-
 				<!-- Body -->
 				<div
 					id="modal-body"
@@ -49,30 +91,34 @@ templ Modal() {
 				>
 					<!-- Content loaded via Datastar SSE -->
 				</div>
-
 				<!-- Footer (optional) -->
-				<div
-					if $modal.showFooter {
-						class="px-6 py-3 border-t border-gray-200 flex justify-end gap-3"
-					}
-				>
-					<button
-						type="button"
-						data-on-click="$modal.visible = false"
-						class="px-4 py-2 text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-md transition-colors"
-					>
-						Cancel
-					</button>
-					<button
-						type="button"
-						data-on-click="$modal.onConfirm && $modal.onConfirm()"
-						class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md transition-colors"
-						if $modal.showConfirm {
-							if len($modal.confirmText) > 0 { { $modal.confirmText } } else { Confirm }
+				// ② Conditional blocks wrap the *entire* element, not just attributes
+				if props.ShowFooter {
+					<div class="px-6 py-3 border-t border-gray-200 flex justify-end gap-3">
+						<button
+							type="button"
+							data-on:click="$modal.visible = false"
+							class="px-4 py-2 text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-md transition-colors"
+						>
+							Cancel
+						</button>
+						// ③ Conditional attributes must use templ's attribute syntax
+						if props.ShowConfirm {
+							<button
+								type="button"
+								data-on:click="$modal.onConfirm && $modal.onConfirm()"
+								class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md transition-colors"
+							>
+								// ④ Text content also needs { } for Go expressions
+								if props.ConfirmText != "" {
+									{ props.ConfirmText }
+								} else {
+									Confirm
+								}
+							</button>
 						}
-					>
-					</button>
-				</div>
+					</div>
+				}
 			</div>
 		</div>
 	</div>

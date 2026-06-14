@@ -20,7 +20,9 @@ type JournalHandlers struct {
 	accSvc     *service.AccountingService
 }
 
-func NewJournalHandlers(acc *service.AccountingService, jr *service.JournalServices) *JournalHandlers {
+func NewJournalHandlers(
+	acc *service.AccountingService,
+	jr *service.JournalServices) *JournalHandlers {
 	return &JournalHandlers{
 		journalSvc: jr,
 		accSvc:     acc,

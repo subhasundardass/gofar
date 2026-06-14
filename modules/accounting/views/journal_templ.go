@@ -74,7 +74,7 @@ func JournalView(title string, data *data.PaginatedResult[*ent.Journal]) templ.C
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "\" class=\"win-btn\"><span class=\"font-semibold text-gray-700\">+ New row</span></a></div>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "\" class=\"win-btn-primary\"><span class=\"font-semibold\">+ New row</span></a></div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -121,7 +121,7 @@ func journalTable(rows []*ent.Journal) templ.Component {
 			templ_7745c5c3_Var5 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "<div class=\"overflow-x-auto rounded border border-gray-200 mt-2\"><table class=\"min-w-full text-sm\"><thead class=\"bg-gray-50 text-gray-600 uppercase text-xs\"><tr><th class=\"text-left\">Voucher No</th><th class=\"text-left\">Date</th><th class=\"text-left\">Reference</th><th class=\"text-left\">Narration</th><th class=\"text-right\">Debit</th><th class=\"text-right\">Credit</th><th class=\"text-right\">Status</th></tr></thead> <tbody class=\"divide-y divide-gray-100\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "<div class=\"overflow-x-auto rounded border border-gray-200 mt-2\"><table class=\"min-w-full text-sm\"><thead class=\"bg-gray-50 text-gray-600 uppercase text-xs\"><tr><th class=\"px-4 py-2 text-left w-16\">Voucher No</th><th class=\"px-4 py-2 text-left w-16\">Date</th><th class=\"px-4 py-2 text-left w-32\">Reference</th><th class=\"px-4 py-2 text-left\">Narration</th><th class=\"px-4 py-2 text-right w-32\">Debit</th><th class=\"px-4 py-2 text-right w-32\">Credit</th><th class=\"px-4 py-2 text-right w-16\">Status</th></tr></thead> <tbody class=\"divide-y divide-gray-100\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -222,27 +222,27 @@ func journalRow(row *ent.Journal) templ.Component {
 				return templ_7745c5c3_Err
 			}
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 12, "</td><td class=\"text-right text-green-700\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 12, "</td><td class=\"text-right text-green-700 font-semibold\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var11 string
 		templ_7745c5c3_Var11, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%.2f", row.TotalDebit))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `modules/accounting/views/journal.templ`, Line: 69, Col: 77}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `modules/accounting/views/journal.templ`, Line: 69, Col: 91}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var11))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 13, "</td><td class=\"text-right text-blue-700\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 13, "</td><td class=\"text-right text-blue-700 font-semibold\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var12 string
 		templ_7745c5c3_Var12, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%.2f", row.TotalCredit))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `modules/accounting/views/journal.templ`, Line: 70, Col: 77}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `modules/accounting/views/journal.templ`, Line: 70, Col: 91}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var12))
 		if templ_7745c5c3_Err != nil {

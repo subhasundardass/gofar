@@ -4,10 +4,14 @@ templ Toast() {
 	<div
 		id="toast"
 		data-show="$toast.visible"
-		data-on-load="setTimeout(() => $toast.visible = false, 3000)"
-		class="fixed bottom-4 right-4 px-4 py-2 rounded text-white shadow-lg"
+		class="fixed bottom-4 right-4 z-[9999] px-4 py-2 rounded text-white shadow-lg bg-gray-800"
 	>
 		<span data-text="$toast.message"></span>
-		<button data-on-click="$toast.visible = false">✕</button>
+		<button
+			class="ml-3"
+			data-on:click="$toast.visible=false"
+		>
+			✕
+		</button>
 	</div>
 }

@@ -19,8 +19,7 @@ type Handlers struct {
 
 // AccountingHandlers holds all Accounting HTTP handlers.
 type AccountingHandlers struct {
-	svc   *service.AccountingService
-	jrSvc *service.JournalServices
+	svc *service.AccountingService
 }
 
 // NewHandlers constructs all handler sets. Takes services only — never fiber.App.

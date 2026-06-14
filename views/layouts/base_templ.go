@@ -44,7 +44,7 @@ func Base(title string) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "</title><meta charset=\"UTF-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\"><meta name=\"theme-color\" content=\"#2563eb\"><meta name=\"mobile-web-app-capable\" content=\"yes\"><meta name=\"apple-mobile-web-app-capable\" content=\"yes\"><meta name=\"apple-mobile-web-app-status-bar-style\" content=\"default\"><link rel=\"manifest\" href=\"/manifest.webmanifest\"><link rel=\"icon\" href=\"/favicon.ico\"><link rel=\"preload\" href=\"/assets/css/app.css\" as=\"style\"><link rel=\"stylesheet\" href=\"/assets/css/app.css\"><script type=\"module\" defer src=\"/assets/js/datastar.js\"></script></head><body class=\"h-screen flex flex-col overflow-hidden\" data-signals='{\n\t\t\t\t\"toast\": {\n\t\t\t\t\t\"message\": \"\",\n\t\t\t\t\t\"level\": \"success\",\n\t\t\t\t\t\"visible\": false\n\t\t\t\t}\n\t\t\t}'><div class=\"shrink-0\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "</title><meta charset=\"UTF-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\"><meta name=\"theme-color\" content=\"#2563eb\"><meta name=\"mobile-web-app-capable\" content=\"yes\"><meta name=\"apple-mobile-web-app-capable\" content=\"yes\"><meta name=\"apple-mobile-web-app-status-bar-style\" content=\"default\"><link rel=\"manifest\" href=\"/manifest.webmanifest\"><link rel=\"icon\" href=\"/favicon.ico\"><link rel=\"preload\" href=\"/assets/css/app.css\" as=\"style\"><link rel=\"stylesheet\" href=\"/assets/css/app.css\"><script type=\"module\" defer src=\"/assets/js/datastar.js\"></script></head><body class=\"h-screen flex flex-col overflow-hidden\" data-signals='{\n\t\t\t\t\"modal\": { \"visible\": false },\n  \t\t\t\t\"toast\": { \"visible\": false }\n\t\t\t}'><div class=\"shrink-0\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -88,11 +88,21 @@ func Base(title string) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
+		templ_7745c5c3_Err = components.Modal(components.ModalProps{
+			Title:       "",
+			ShowFooter:  true,
+			ShowConfirm: true,
+			ConfirmText: "Save",
+			Width:       "md",
+		}).Render(ctx, templ_7745c5c3_Buffer)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
 		templ_7745c5c3_Err = components.Toast().Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "<script>\n\t\t\t\tif (\"serviceWorker\" in navigator) {\n\t\t\t\t\tnavigator.serviceWorker.register(\"/sw.js\");\n\t\t\t\t}\n\t\t\t</script></body></html>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "<script>\n\t\t\t\tif (\"serviceWorker\" in navigator) {\n\t\t\t\t\tnavigator.serviceWorker.register(\"/sw.js\");\n\t\t\t\t}\n\t\t\t</script><style>\n\t\t\t\t[data-cloak] { display: none !important; }\n\t\t\t</style></body></html>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

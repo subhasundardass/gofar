@@ -90,7 +90,47 @@ func (r *JournalRepository) Create(
 	ctx context.Context,
 	input *ent.Journal,
 ) (*ent.Journal, error) {
-	return r.db.Journal.
+	return createJournal(ctx, r.db, input)
+}
+
+func (r *JournalRepository) CreateWithLines(
+	ctx context.Context,
+	input *ent.Journal,
+	lines []*ent.Journal_Line,
+) (journal *ent.Journal, err error) {
+	if len(lines) == 0 {
+		return nil, fmt.Errorf("journal lines are required")
+	}
+
+	tx, err := r.db.Tx(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("begin journal transaction: %w", err)
+	}
+	defer func() {
+		if err != nil {
+			_ = tx.Rollback()
+		}
+	}()
+
+	client := tx.Client()
+	journal, err = createJournal(ctx, client, input)
+	if err != nil {
+		return nil, fmt.Errorf("create journal: %w", err)
+	}
+
+	if err = createLineBulk(ctx, client, journal.ID, lines); err != nil {
+		return nil, fmt.Errorf("create journal lines: %w", err)
+	}
+
+	if err = tx.Commit(); err != nil {
+		return nil, fmt.Errorf("commit journal transaction: %w", err)
+	}
+
+	return journal, nil
+}
+
+func createJournal(ctx context.Context, client *ent.Client, input *ent.Journal) (*ent.Journal, error) {
+	return client.Journal.
 		Create().
 		SetDate(input.Date).
 		SetVoucherType(input.VoucherType).
@@ -108,16 +148,29 @@ func (r *JournalRepository) CreateLineBulk(
 	ctx context.Context,
 	lines []*ent.Journal_Line,
 ) error {
+	return createLineBulk(ctx, r.db, 0, lines)
+}
+
+func createLineBulk(
+	ctx context.Context,
+	client *ent.Client,
+	journalID int,
+	lines []*ent.Journal_Line,
+) error {
 	builders := make([]*ent.JournalLineCreate, 0, len(lines))
 
 	for i, line := range lines {
-		// Debug: remove after confirming
-		fmt.Printf("Line %d: JournalID=%d LedgerID=%d Debit=%.2f Credit=%.2f\n",
-			i+1, line.JournalID, line.LedgerID, line.Debit, line.Credit)
+		lineJournalID := line.JournalID
+		if journalID > 0 {
+			lineJournalID = journalID
+		}
+		if lineJournalID <= 0 {
+			return fmt.Errorf("line %d: journal id is required", i+1)
+		}
 
-		lb := r.db.Journal_Line.
+		lb := client.Journal_Line.
 			Create().
-			SetJournalID(line.JournalID).
+			SetJournalID(lineJournalID).
 			SetLedgerID(line.LedgerID).
 			SetDebit(line.Debit).
 			SetCredit(line.Credit).
@@ -127,7 +180,7 @@ func (r *JournalRepository) CreateLineBulk(
 		builders = append(builders, lb)
 	}
 
-	return r.db.Journal_Line.
+	return client.Journal_Line.
 		CreateBulk(builders...).
 		Exec(ctx)
 }

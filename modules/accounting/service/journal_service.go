@@ -3,6 +3,8 @@ package service
 import (
 	"context"
 	"fmt"
+	"math"
+	"strings"
 	"time"
 
 	"github.com/subhasundardas/gofar/ent"
@@ -17,7 +19,7 @@ type JournalServices struct {
 }
 
 type JournalLineInput struct {
-	EntryType string // "DR" or "CR"
+	EntryType string // "D"/"DR" for debit, "C"/"CR" for credit
 	LedgerID  int
 	Desc      string
 	Amount    float64
@@ -53,21 +55,43 @@ func (s *JournalServices) CreateJournal(
 
 	// 1. Validate balance
 	var totalDebit, totalCredit float64
-	for _, row := range input.Rows {
-		if row.EntryType == "D" {
+	for i, row := range input.Rows {
+		if isBlankJournalLine(row) {
+			continue
+		}
+
+		entryType, err := normalizeJournalEntryType(row.EntryType)
+		if err != nil {
+			return nil, fmt.Errorf("row %d: %w", i+1, err)
+		}
+		if row.LedgerID <= 0 {
+			return nil, fmt.Errorf("row %d: ledger is required", i+1)
+		}
+		if row.Amount <= 0 {
+			return nil, fmt.Errorf("row %d: amount must be greater than zero", i+1)
+		}
+
+		if entryType == "D" {
 			totalDebit += row.Amount
 		} else {
 			totalCredit += row.Amount
 		}
 	}
-	if totalDebit != totalCredit {
+	if math.Abs(totalDebit-totalCredit) > 0.000001 {
 		return nil, fmt.Errorf(
 			"journal not balanced: debit %.2f != credit %.2f",
 			totalDebit, totalCredit,
 		)
 	}
 
-	// 2. Build journal header
+	// 2. Build lines before touching the database so validation failures do
+	// not leave an orphan journal header behind.
+	lines, err := s.createJournalLines(input.Rows)
+	if err != nil {
+		return nil, err
+	}
+
+	// 3. Build journal header
 	journalInput := &ent.Journal{
 		Date:          input.Date,
 		VoucherType:   input.VoucherType,
@@ -80,21 +104,10 @@ func (s *JournalServices) CreateJournal(
 		TotalCredit:   totalCredit,
 	}
 
-	// 3. Save journal header
-	journal, err := s.repo.Create(ctx, journalInput)
+	// 4. Save journal header and lines atomically.
+	journal, err := s.repo.CreateWithLines(ctx, journalInput, lines)
 	if err != nil {
-		return nil, fmt.Errorf("create journal: %w", err)
-	}
-
-	// 4. Build lines
-	lines, err := s.createJournalLines(ctx, journal.ID, input.Rows)
-	if err != nil {
-		return nil, err
-	}
-
-	// 5. Bulk save lines
-	if err := s.repo.CreateLineBulk(ctx, lines); err != nil {
-		return nil, fmt.Errorf("create journal lines: %w", err)
+		return nil, fmt.Errorf("create journal with lines: %w", err)
 	}
 
 	return journal, nil
@@ -102,29 +115,65 @@ func (s *JournalServices) CreateJournal(
 
 // createJournalLines builds []*ent.Journal_Line from input rows
 func (s *JournalServices) createJournalLines(
-	ctx context.Context,
-	journalID int,
 	rows []JournalLineInput,
 ) ([]*ent.Journal_Line, error) {
 	lines := make([]*ent.Journal_Line, 0, len(rows))
 
 	for i, row := range rows {
-		// Debug: remove after fix
-		fmt.Printf("Row %d: EntryType=%s LedgerID=%d Amount=%.2f Desc=%s\n",
-			i+1, row.EntryType, row.LedgerID, row.Amount, row.Desc)
-
-		if row.LedgerID == 0 || row.Amount == 0 {
-			fmt.Printf("Row %d SKIPPED: LedgerID=%d Amount=%.2f\n", i+1, row.LedgerID, row.Amount)
+		if isBlankJournalLine(row) {
 			continue
 		}
-		// ...
-	}
 
-	fmt.Printf("Total valid lines: %d\n", len(lines))
+		debit := 0.0
+		credit := 0.0
+
+		entryType, err := normalizeJournalEntryType(row.EntryType)
+		if err != nil {
+			return nil, fmt.Errorf("row %d: %w", i+1, err)
+		}
+		if row.LedgerID <= 0 {
+			return nil, fmt.Errorf("row %d: ledger is required", i+1)
+		}
+		if row.Amount <= 0 {
+			return nil, fmt.Errorf("row %d: amount must be greater than zero", i+1)
+		}
+
+		if entryType == "D" {
+			debit = row.Amount
+		} else {
+			credit = row.Amount
+		}
+
+		lines = append(lines, &ent.Journal_Line{
+			LedgerID:    row.LedgerID,
+			Debit:       debit,
+			Credit:      credit,
+			Description: utils.NullableString(strings.TrimSpace(row.Desc)),
+			LineNo:      len(lines) + 1,
+		})
+	}
 
 	if len(lines) == 0 {
 		return nil, fmt.Errorf("no valid journal lines provided")
 	}
 
 	return lines, nil
+}
+
+func isBlankJournalLine(row JournalLineInput) bool {
+	return strings.TrimSpace(row.EntryType) == "" &&
+		row.LedgerID == 0 &&
+		strings.TrimSpace(row.Desc) == "" &&
+		row.Amount == 0
+}
+
+func normalizeJournalEntryType(entryType string) (string, error) {
+	switch strings.ToUpper(strings.TrimSpace(entryType)) {
+	case "D", "DR", "DEBIT":
+		return "D", nil
+	case "C", "CR", "CREDIT":
+		return "C", nil
+	default:
+		return "", fmt.Errorf("invalid entry type %q", entryType)
+	}
 }

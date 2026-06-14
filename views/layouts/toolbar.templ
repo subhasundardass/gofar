@@ -4,12 +4,32 @@ templ Toolbar() {
 	<div class="h-10 flex items-center px-2 bg-[#e2e6f5] border-b border-gray-300 text-sm">
 		<!-- LEFT: ACTION GROUPS -->
 		<div class="flex items-center gap-1">
-			<button class="win-icon-btn text-blue-600" title="New">
+			<button
+				class="win-icon-btn text-blue-600"
+				title="New"
+				data-on:click="
+					$modal.title = 'New';
+					$modal.visible = true;
+					$modal.type = 'item';
+					fetch('/accounting/journal/new')
+			.then(r => r.text())
+			.then(html => document.querySelector('#modal-body').innerHTML = html)
+				"
+			>
 				<svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
 					<path d="M12 5v14M5 12h14"></path>
 				</svg>
 			</button>
-			<button class="win-icon-btn text-green-600" title="Save">
+			<button
+				class="win-icon-btn text-green-600"
+				title="Save"
+				data-on:click="
+				$toast.message='Saved successfully';
+				$toast.visible=true;
+
+				setTimeout(() => $toast.visible=false, 3000);
+				"
+			>
 				<svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
 					<path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
 				</svg>
