@@ -352,7 +352,7 @@ func (_u *JournalLineUpdate) sqlSave(ctx context.Context) (_node int, err error)
 	if _u.mutation.JournalCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
-			Inverse: false,
+			Inverse: true,
 			Table:   journal_line.JournalTable,
 			Columns: []string{journal_line.JournalColumn},
 			Bidi:    false,
@@ -365,7 +365,7 @@ func (_u *JournalLineUpdate) sqlSave(ctx context.Context) (_node int, err error)
 	if nodes := _u.mutation.JournalIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
-			Inverse: false,
+			Inverse: true,
 			Table:   journal_line.JournalTable,
 			Columns: []string{journal_line.JournalColumn},
 			Bidi:    false,
@@ -381,7 +381,7 @@ func (_u *JournalLineUpdate) sqlSave(ctx context.Context) (_node int, err error)
 	if _u.mutation.LedgerCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
-			Inverse: false,
+			Inverse: true,
 			Table:   journal_line.LedgerTable,
 			Columns: []string{journal_line.LedgerColumn},
 			Bidi:    false,
@@ -394,7 +394,7 @@ func (_u *JournalLineUpdate) sqlSave(ctx context.Context) (_node int, err error)
 	if nodes := _u.mutation.LedgerIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
-			Inverse: false,
+			Inverse: true,
 			Table:   journal_line.LedgerTable,
 			Columns: []string{journal_line.LedgerColumn},
 			Bidi:    false,
@@ -779,7 +779,7 @@ func (_u *JournalLineUpdateOne) sqlSave(ctx context.Context) (_node *Journal_Lin
 	if _u.mutation.JournalCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
-			Inverse: false,
+			Inverse: true,
 			Table:   journal_line.JournalTable,
 			Columns: []string{journal_line.JournalColumn},
 			Bidi:    false,
@@ -792,7 +792,7 @@ func (_u *JournalLineUpdateOne) sqlSave(ctx context.Context) (_node *Journal_Lin
 	if nodes := _u.mutation.JournalIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
-			Inverse: false,
+			Inverse: true,
 			Table:   journal_line.JournalTable,
 			Columns: []string{journal_line.JournalColumn},
 			Bidi:    false,
@@ -808,7 +808,7 @@ func (_u *JournalLineUpdateOne) sqlSave(ctx context.Context) (_node *Journal_Lin
 	if _u.mutation.LedgerCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
-			Inverse: false,
+			Inverse: true,
 			Table:   journal_line.LedgerTable,
 			Columns: []string{journal_line.LedgerColumn},
 			Bidi:    false,
@@ -821,7 +821,7 @@ func (_u *JournalLineUpdateOne) sqlSave(ctx context.Context) (_node *Journal_Lin
 	if nodes := _u.mutation.LedgerIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
-			Inverse: false,
+			Inverse: true,
 			Table:   journal_line.LedgerTable,
 			Columns: []string{journal_line.LedgerColumn},
 			Bidi:    false,

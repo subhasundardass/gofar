@@ -595,7 +595,7 @@ func HasJournal() predicate.Journal_Line {
 	return predicate.Journal_Line(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, false, JournalTable, JournalColumn),
+			sqlgraph.Edge(sqlgraph.M2O, true, JournalTable, JournalColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
 	})
@@ -618,7 +618,7 @@ func HasLedger() predicate.Journal_Line {
 	return predicate.Journal_Line(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, false, LedgerTable, LedgerColumn),
+			sqlgraph.Edge(sqlgraph.M2O, true, LedgerTable, LedgerColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
 	})

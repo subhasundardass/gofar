@@ -413,7 +413,9 @@ func (_q *JournalQuery) loadLines(ctx context.Context, query *JournalLineQuery, 
 			init(nodes[i])
 		}
 	}
-	query.withFKs = true
+	if len(query.ctx.Fields) > 0 {
+		query.ctx.AppendFieldOnce(journal_line.FieldJournalID)
+	}
 	query.Where(predicate.Journal_Line(func(s *sql.Selector) {
 		s.Where(sql.InValues(s.C(journal.LinesColumn), fks...))
 	}))
@@ -422,13 +424,10 @@ func (_q *JournalQuery) loadLines(ctx context.Context, query *JournalLineQuery, 
 		return err
 	}
 	for _, n := range neighbors {
-		fk := n.journal_lines
-		if fk == nil {
-			return fmt.Errorf(`foreign-key "journal_lines" is nil for node %v`, n.ID)
-		}
-		node, ok := nodeids[*fk]
+		fk := n.JournalID
+		node, ok := nodeids[fk]
 		if !ok {
-			return fmt.Errorf(`unexpected referenced foreign-key "journal_lines" returned %v for node %v`, *fk, n.ID)
+			return fmt.Errorf(`unexpected referenced foreign-key "journal_id" returned %v for node %v`, fk, n.ID)
 		}
 		assign(node, n)
 	}

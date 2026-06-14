@@ -26,7 +26,6 @@ type JournalLineQuery struct {
 	predicates  []predicate.Journal_Line
 	withJournal *JournalQuery
 	withLedger  *LedgerQuery
-	withFKs     bool
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -77,7 +76,7 @@ func (_q *JournalLineQuery) QueryJournal() *JournalQuery {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(journal_line.Table, journal_line.FieldID, selector),
 			sqlgraph.To(journal.Table, journal.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, false, journal_line.JournalTable, journal_line.JournalColumn),
+			sqlgraph.Edge(sqlgraph.M2O, true, journal_line.JournalTable, journal_line.JournalColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(_q.driver.Dialect(), step)
 		return fromU, nil
@@ -99,7 +98,7 @@ func (_q *JournalLineQuery) QueryLedger() *LedgerQuery {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(journal_line.Table, journal_line.FieldID, selector),
 			sqlgraph.To(ledger.Table, ledger.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, false, journal_line.LedgerTable, journal_line.LedgerColumn),
+			sqlgraph.Edge(sqlgraph.M2O, true, journal_line.LedgerTable, journal_line.LedgerColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(_q.driver.Dialect(), step)
 		return fromU, nil
@@ -406,16 +405,12 @@ func (_q *JournalLineQuery) prepareQuery(ctx context.Context) error {
 func (_q *JournalLineQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Journal_Line, error) {
 	var (
 		nodes       = []*Journal_Line{}
-		withFKs     = _q.withFKs
 		_spec       = _q.querySpec()
 		loadedTypes = [2]bool{
 			_q.withJournal != nil,
 			_q.withLedger != nil,
 		}
 	)
-	if withFKs {
-		_spec.Node.Columns = append(_spec.Node.Columns, journal_line.ForeignKeys...)
-	}
 	_spec.ScanValues = func(columns []string) ([]any, error) {
 		return (*Journal_Line).scanValues(nil, columns)
 	}

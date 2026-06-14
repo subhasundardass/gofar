@@ -2,6 +2,7 @@ package repository
 
 import (
 	"context"
+	"fmt"
 
 	"entgo.io/ent/dialect/sql"
 	"github.com/subhasundardas/gofar/ent"
@@ -89,13 +90,46 @@ func (r *JournalRepository) Create(
 	ctx context.Context,
 	input *ent.Journal,
 ) (*ent.Journal, error) {
-
 	return r.db.Journal.
 		Create().
+		SetDate(input.Date).
+		SetVoucherType(input.VoucherType).
 		SetVoucherNo(input.VoucherNo).
 		SetVoucherDate(input.VoucherDate).
-		// SetNarration(input.Narration).
+		SetNillableReferenceNo(input.ReferenceNo).
+		SetNillableNarration(input.Narration).
+		SetJournalStatus(input.JournalStatus).
+		SetTotalDebit(input.TotalDebit).
+		SetTotalCredit(input.TotalCredit).
 		Save(ctx)
+}
+
+func (r *JournalRepository) CreateLineBulk(
+	ctx context.Context,
+	lines []*ent.Journal_Line,
+) error {
+	builders := make([]*ent.JournalLineCreate, 0, len(lines))
+
+	for i, line := range lines {
+		// Debug: remove after confirming
+		fmt.Printf("Line %d: JournalID=%d LedgerID=%d Debit=%.2f Credit=%.2f\n",
+			i+1, line.JournalID, line.LedgerID, line.Debit, line.Credit)
+
+		lb := r.db.Journal_Line.
+			Create().
+			SetJournalID(line.JournalID).
+			SetLedgerID(line.LedgerID).
+			SetDebit(line.Debit).
+			SetCredit(line.Credit).
+			SetLineNo(i + 1).
+			SetNillableDescription(line.Description)
+
+		builders = append(builders, lb)
+	}
+
+	return r.db.Journal_Line.
+		CreateBulk(builders...).
+		Exec(ctx)
 }
 
 func (r *JournalRepository) Update(

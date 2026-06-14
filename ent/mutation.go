@@ -4207,26 +4207,29 @@ func (m *JournalLineMutation) ResetEdge(name string) error {
 // LedgerMutation represents an operation that mutates the Ledger nodes in the graph.
 type LedgerMutation struct {
 	config
-	op            Op
-	typ           string
-	id            *int
-	status        *int8
-	addstatus     *int8
-	created_at    *time.Time
-	updated_at    *time.Time
-	code          *string
-	name          *string
-	description   *string
-	balance       *float64
-	addbalance    *float64
-	clearedFields map[string]struct{}
-	group         *int
-	clearedgroup  bool
-	party         *int
-	clearedparty  bool
-	done          bool
-	oldValue      func(context.Context) (*Ledger, error)
-	predicates    []predicate.Ledger
+	op                   Op
+	typ                  string
+	id                   *int
+	status               *int8
+	addstatus            *int8
+	created_at           *time.Time
+	updated_at           *time.Time
+	code                 *string
+	name                 *string
+	description          *string
+	balance              *float64
+	addbalance           *float64
+	clearedFields        map[string]struct{}
+	group                *int
+	clearedgroup         bool
+	party                *int
+	clearedparty         bool
+	journal_lines        map[int]struct{}
+	removedjournal_lines map[int]struct{}
+	clearedjournal_lines bool
+	done                 bool
+	oldValue             func(context.Context) (*Ledger, error)
+	predicates           []predicate.Ledger
 }
 
 var _ ent.Mutation = (*LedgerMutation)(nil)
@@ -4734,6 +4737,60 @@ func (m *LedgerMutation) ResetParty() {
 	m.clearedparty = false
 }
 
+// AddJournalLineIDs adds the "journal_lines" edge to the Journal_Line entity by ids.
+func (m *LedgerMutation) AddJournalLineIDs(ids ...int) {
+	if m.journal_lines == nil {
+		m.journal_lines = make(map[int]struct{})
+	}
+	for i := range ids {
+		m.journal_lines[ids[i]] = struct{}{}
+	}
+}
+
+// ClearJournalLines clears the "journal_lines" edge to the Journal_Line entity.
+func (m *LedgerMutation) ClearJournalLines() {
+	m.clearedjournal_lines = true
+}
+
+// JournalLinesCleared reports if the "journal_lines" edge to the Journal_Line entity was cleared.
+func (m *LedgerMutation) JournalLinesCleared() bool {
+	return m.clearedjournal_lines
+}
+
+// RemoveJournalLineIDs removes the "journal_lines" edge to the Journal_Line entity by IDs.
+func (m *LedgerMutation) RemoveJournalLineIDs(ids ...int) {
+	if m.removedjournal_lines == nil {
+		m.removedjournal_lines = make(map[int]struct{})
+	}
+	for i := range ids {
+		delete(m.journal_lines, ids[i])
+		m.removedjournal_lines[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedJournalLines returns the removed IDs of the "journal_lines" edge to the Journal_Line entity.
+func (m *LedgerMutation) RemovedJournalLinesIDs() (ids []int) {
+	for id := range m.removedjournal_lines {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// JournalLinesIDs returns the "journal_lines" edge IDs in the mutation.
+func (m *LedgerMutation) JournalLinesIDs() (ids []int) {
+	for id := range m.journal_lines {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetJournalLines resets all changes to the "journal_lines" edge.
+func (m *LedgerMutation) ResetJournalLines() {
+	m.journal_lines = nil
+	m.clearedjournal_lines = false
+	m.removedjournal_lines = nil
+}
+
 // Where appends a list predicates to the LedgerMutation builder.
 func (m *LedgerMutation) Where(ps ...predicate.Ledger) {
 	m.predicates = append(m.predicates, ps...)
@@ -5022,12 +5079,15 @@ func (m *LedgerMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *LedgerMutation) AddedEdges() []string {
-	edges := make([]string, 0, 2)
+	edges := make([]string, 0, 3)
 	if m.group != nil {
 		edges = append(edges, ledger.EdgeGroup)
 	}
 	if m.party != nil {
 		edges = append(edges, ledger.EdgeParty)
+	}
+	if m.journal_lines != nil {
+		edges = append(edges, ledger.EdgeJournalLines)
 	}
 	return edges
 }
@@ -5044,30 +5104,50 @@ func (m *LedgerMutation) AddedIDs(name string) []ent.Value {
 		if id := m.party; id != nil {
 			return []ent.Value{*id}
 		}
+	case ledger.EdgeJournalLines:
+		ids := make([]ent.Value, 0, len(m.journal_lines))
+		for id := range m.journal_lines {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *LedgerMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 2)
+	edges := make([]string, 0, 3)
+	if m.removedjournal_lines != nil {
+		edges = append(edges, ledger.EdgeJournalLines)
+	}
 	return edges
 }
 
 // RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
 // the given name in this mutation.
 func (m *LedgerMutation) RemovedIDs(name string) []ent.Value {
+	switch name {
+	case ledger.EdgeJournalLines:
+		ids := make([]ent.Value, 0, len(m.removedjournal_lines))
+		for id := range m.removedjournal_lines {
+			ids = append(ids, id)
+		}
+		return ids
+	}
 	return nil
 }
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *LedgerMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 2)
+	edges := make([]string, 0, 3)
 	if m.clearedgroup {
 		edges = append(edges, ledger.EdgeGroup)
 	}
 	if m.clearedparty {
 		edges = append(edges, ledger.EdgeParty)
+	}
+	if m.clearedjournal_lines {
+		edges = append(edges, ledger.EdgeJournalLines)
 	}
 	return edges
 }
@@ -5080,6 +5160,8 @@ func (m *LedgerMutation) EdgeCleared(name string) bool {
 		return m.clearedgroup
 	case ledger.EdgeParty:
 		return m.clearedparty
+	case ledger.EdgeJournalLines:
+		return m.clearedjournal_lines
 	}
 	return false
 }
@@ -5107,6 +5189,9 @@ func (m *LedgerMutation) ResetEdge(name string) error {
 		return nil
 	case ledger.EdgeParty:
 		m.ResetParty()
+		return nil
+	case ledger.EdgeJournalLines:
+		m.ResetJournalLines()
 		return nil
 	}
 	return fmt.Errorf("unknown Ledger edge %s", name)

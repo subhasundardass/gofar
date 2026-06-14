@@ -11,6 +11,7 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/subhasundardas/gofar/ent/acct_group"
+	"github.com/subhasundardas/gofar/ent/journal_line"
 	"github.com/subhasundardas/gofar/ent/ledger"
 	"github.com/subhasundardas/gofar/ent/partymaster"
 )
@@ -132,6 +133,21 @@ func (_c *LedgerCreate) SetNillablePartyID(id *int) *LedgerCreate {
 // SetParty sets the "party" edge to the PartyMaster entity.
 func (_c *LedgerCreate) SetParty(v *PartyMaster) *LedgerCreate {
 	return _c.SetPartyID(v.ID)
+}
+
+// AddJournalLineIDs adds the "journal_lines" edge to the Journal_Line entity by IDs.
+func (_c *LedgerCreate) AddJournalLineIDs(ids ...int) *LedgerCreate {
+	_c.mutation.AddJournalLineIDs(ids...)
+	return _c
+}
+
+// AddJournalLines adds the "journal_lines" edges to the Journal_Line entity.
+func (_c *LedgerCreate) AddJournalLines(v ...*Journal_Line) *LedgerCreate {
+	ids := make([]int, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _c.AddJournalLineIDs(ids...)
 }
 
 // Mutation returns the LedgerMutation object of the builder.
@@ -307,6 +323,22 @@ func (_c *LedgerCreate) createSpec() (*Ledger, *sqlgraph.CreateSpec) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(partymaster.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := _c.mutation.JournalLinesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   ledger.JournalLinesTable,
+			Columns: []string{ledger.JournalLinesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(journal_line.FieldID, field.TypeInt),
 			},
 		}
 		for _, k := range nodes {

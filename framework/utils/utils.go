@@ -18,4 +18,9 @@ func ToFloat(v any) (float64, bool) {
 	}
 }
 
-// utils.Ptr()
+func NullableString(s string) *string {
+	if s == "" {
+		return nil
+	}
+	return &s
+}

@@ -140,7 +140,15 @@ func journalEntryForm(props JournalProps) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "<div class=\"mt-2\"><div class=\"max-h-[60vh] overflow-y-auto\">")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
 		templ_7745c5c3_Err = JournalEntryForm(props).Render(ctx, templ_7745c5c3_Buffer)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "</div></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -174,33 +182,33 @@ func journalHeader(props JournalProps) templ.Component {
 			templ_7745c5c3_Var6 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "<fieldset class=\"border border-gray-300 rounded-md p-4\"><legend class=\"px-2 text-sm font-semibold text-gray-700\">Journal Information</legend><div class=\"flex flex-row gap-2 justify-between\"><div class=\"flex gap-4 items-center\"><div class=\"flex gap-2 items-center flex-1\"><label for=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "<fieldset class=\"border border-gray-300 rounded-md p-4\"><legend class=\"px-2 text-sm font-semibold text-gray-700\">Journal Information</legend><div class=\"flex flex-row gap-2 justify-between\"><div class=\"flex gap-4 items-center\"><div class=\"flex gap-2 items-center flex-1\"><label for=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var7 string
 		templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.ResolveAttributeValue(props.FieldMap["jr_date"].Meta.Label)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `modules/accounting/views/journal_new.templ`, Line: 61, Col: 54}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `modules/accounting/views/journal_new.templ`, Line: 62, Col: 54}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var7)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "\" class=\"w-32 shrink-0\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "\" class=\"w-32 shrink-0\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var8 string
 		templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.JoinStringErrs(props.FieldMap["jr_date"].Meta.Label)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `modules/accounting/views/journal_new.templ`, Line: 61, Col: 117}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `modules/accounting/views/journal_new.templ`, Line: 62, Col: 117}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var8))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "</label> <span class=\"shrink-0\">:</span>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "</label> <span class=\"shrink-0\">:</span>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -208,33 +216,33 @@ func journalHeader(props JournalProps) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "</div></div><div class=\"flex gap-4 items-center\"><div class=\"flex gap-2 items-center flex-1\"><label for=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, "</div></div><div class=\"flex gap-4 items-center\"><div class=\"flex gap-2 items-center flex-1\"><label for=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var9 string
 		templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.ResolveAttributeValue(props.FieldMap["jr_no"].Meta.Label)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `modules/accounting/views/journal_new.templ`, Line: 68, Col: 52}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `modules/accounting/views/journal_new.templ`, Line: 69, Col: 52}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var9)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "\" class=\"w-32 shrink-0\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 11, "\" class=\"w-32 shrink-0\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var10 string
 		templ_7745c5c3_Var10, templ_7745c5c3_Err = templ.JoinStringErrs(props.FieldMap["jr_no"].Meta.Label)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `modules/accounting/views/journal_new.templ`, Line: 68, Col: 113}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `modules/accounting/views/journal_new.templ`, Line: 69, Col: 113}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var10))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, "</label> <span class=\"shrink-0\">:</span>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 12, "</label> <span class=\"shrink-0\">:</span>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -242,33 +250,33 @@ func journalHeader(props JournalProps) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 11, "</div><div class=\"flex gap-2 items-center flex-1\"><label for=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 13, "</div><div class=\"flex gap-2 items-center flex-1\"><label for=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var11 string
 		templ_7745c5c3_Var11, templ_7745c5c3_Err = templ.ResolveAttributeValue(props.FieldMap["ref_no"].Meta.Label)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `modules/accounting/views/journal_new.templ`, Line: 73, Col: 53}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `modules/accounting/views/journal_new.templ`, Line: 74, Col: 53}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var11)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 12, "\" class=\"w-32 shrink-0\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 14, "\" class=\"w-32 shrink-0\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var12 string
 		templ_7745c5c3_Var12, templ_7745c5c3_Err = templ.JoinStringErrs(props.FieldMap["ref_no"].Meta.Label)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `modules/accounting/views/journal_new.templ`, Line: 73, Col: 115}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `modules/accounting/views/journal_new.templ`, Line: 74, Col: 115}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var12))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 13, "</label> <span class=\"shrink-0\">:</span>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 15, "</label> <span class=\"shrink-0\">:</span>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -276,7 +284,7 @@ func journalHeader(props JournalProps) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 14, "</div></div></div></fieldset>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 16, "</div></div></div></fieldset>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -284,132 +292,6 @@ func journalHeader(props JournalProps) templ.Component {
 	})
 }
 
-// journalEntryGrid renders the multi-line entry table.
-//
-// Each row has 5 cells:
-//   1. Type (D / C select)
-//   2. Ledger (lookup combobox bound to the seeded ledgers)
-//   3. Narration (text input)
-//   4. Amount (number input)
-//   5. Remove button
-//
-// Adding a row pushes a new object onto `lines` and bumps `nextId`.
-// Removing a row splices the array out by id.
-// templ journalEntryGrid(ledgers []form.Option) {
-// 	<fieldset class="border border-gray-300 rounded-md p-4">
-// 		<legend class="px-2 text-sm font-semibold text-gray-700">Entry</legend>
-// 		<div class="overflow-x-auto rounded border border-gray-200">
-// 			<table class="min-w-full text-sm">
-// 				<thead class="bg-gray-50 text-gray-600 uppercase text-xs">
-// 					<tr>
-// 						<th class="w-12 text-center">#</th>
-// 						<th class="w-24 text-left">Type</th>
-// 						<th class="text-left">Ledger</th>
-// 						<th class="text-left">Particulars</th>
-// 						<th class="w-32 text-right">Amount</th>
-// 						<th class="w-12 text-center">—</th>
-// 					</tr>
-// 				</thead>
-// 				<tbody class="divide-y divide-gray-100">
-// 					@journalEntryRowTemplate(ledgers)
-// 				</tbody>
-// 				<tfoot class="bg-gray-50">
-// 					<tr>
-// 						<td colspan="4" class="px-2 py-2 text-right text-xs font-semibold text-gray-600 uppercase">Totals</td>
-// 						<td class="px-2 py-2 text-right">
-// 							<div class="flex flex-col text-xs leading-tight">
-// 								<span class="text-green-700">Dr: <span data-text="totalDebit.toFixed(2)">0.00</span></span>
-// 								<span class="text-red-700">Cr: <span data-text="totalCredit.toFixed(2)">0.00</span></span>
-// 							</div>
-// 						</td>
-// 						<td></td>
-// 					</tr>
-// 					<tr>
-// 						<td colspan="6" class="px-2 py-2">
-// 							<div class="text-xs font-semibold">
-// 								<span class="text-red-600" data-show="!balanced">
-// 									⚠ Debit and Credit do not match (diff: <span data-text="diff.toFixed(2)">0.00</span>)
-// 								</span>
-// 								<span class="text-green-600" data-show="balanced">
-// 									✓ Debit and Credit are balanced
-// 								</span>
-// 							</div>
-// 						</td>
-// 					</tr>
-// 				</tfoot>
-// 			</table>
-// 		</div>
-// 		<div class="mt-2 flex justify-between items-center">
-// 			<button
-// 				type="button"
-// 				class="win-btn"
-// 				data-on:click="lines = [...lines, { id: nextId, type: 'D', ledger: '', narration: '', amount: '' }]; nextId++"
-// 			>
-// 				<span class="font-semibold text-gray-700">+ Add Line</span>
-// 			</button>
-// 			<div class="text-xs text-gray-500" data-text="lines.length + ' line(s)'">0 line(s)</div>
-// 		</div>
-// 	</fieldset>
-// }
-
-// journalEntryRowTemplate renders the per-row template bound to the
-// `lines` signal. The expression `data-bind="type"` etc. keeps the
-// inputs in sync with the array element, and the data-on:click
-// handler on the remove button splices the row out by id.
-//
-//	templ journalEntryRowTemplate(ledgers []form.Option) {
-//		<template data-bind-each="lines">
-//			<tr>
-//				<td class="px-2 py-2 text-center text-gray-500" data-text="(lines.indexOf(lines.find(l => l.id === lines[$index].id)) + 1)">1</td>
-//				<td class="px-2 py-2">
-//					<select
-//						class="w-full rounded-md border border-gray-300 bg-white px-2 py-1 text-sm"
-//						data-bind="type"
-//					>
-//						<option value="D">Debit</option>
-//						<option value="C">Credit</option>
-//					</select>
-//				</td>
-//				<td class="px-2 py-2">
-//					<select
-//						class="w-full rounded-md border border-gray-300 bg-white px-2 py-1 text-sm"
-//						data-bind="ledger"
-//					>
-//						<option value="">— select ledger —</option>
-//						for _, l := range ledgers {
-//							<option value={ l.Value }>{ l.Label }</option>
-//						}
-//					</select>
-//				</td>
-//				<td class="px-2 py-2">
-//					<input
-//						type="text"
-//						class="w-full rounded-md border border-gray-300 px-2 py-1 text-sm"
-//						placeholder="Narration"
-//						data-bind="narration"
-//					/>
-//				</td>
-//				<td class="px-2 py-2">
-//					<input
-//						type="number"
-//						step="0.01"
-//						class="w-full rounded-md border border-gray-300 px-2 py-1 text-sm text-right"
-//						placeholder="0.00"
-//						data-bind="amount"
-//					/>
-//				</td>
-//				<td class="px-2 py-2 text-center">
-//					<button
-//						type="button"
-//						class="text-red-500 hover:text-red-700 text-sm"
-//						title="Remove line"
-//						aria-label="Remove line"
-//						data-on:click="lines = lines.filter(l => l.id !== lines[$index].id)"
-//					>✕</button>
-//				</td>
-//			</tr>
-//		</template>
-//	}
 func JournalEntryForm(props JournalProps) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
@@ -431,20 +313,20 @@ func JournalEntryForm(props JournalProps) templ.Component {
 			templ_7745c5c3_Var13 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 15, "<fieldset class=\"border border-gray-300 rounded-md mt-4 p-4\"><legend class=\"px-2 text-sm font-semibold text-gray-700\">Entry</legend><div id=\"je-wrapper\" data-signals=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 17, "<fieldset class=\"border border-gray-300 rounded-md p-4\"><legend class=\"px-2 text-sm font-semibold text-gray-700\">Entry</legend><div id=\"je-wrapper\" data-signals=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var14 string
 		templ_7745c5c3_Var14, templ_7745c5c3_Err = templ.ResolveAttributeValue(fmt.Sprintf(`{"rowCount": %d}`, props.InitialRows))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `modules/accounting/views/journal_new.templ`, Line: 212, Col: 68}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `modules/accounting/views/journal_new.templ`, Line: 88, Col: 68}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var14)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 16, "\"><div class=\"min-w-full text-sm\" id=\"entry-body\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 18, "\"><div class=\"min-w-full text-sm\" id=\"entry-body\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -454,7 +336,7 @@ func JournalEntryForm(props JournalProps) templ.Component {
 				return templ_7745c5c3_Err
 			}
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 17, "</div><button class=\"win-btn mt-2\" data-on:click=\"@get('/accounting/journal/new/newrow?index=' + ($rowCount + 1))\">Add Row</button></div></fieldset>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 19, "</div><div class=\"flex items-center justify-between mt-3\"><button type=\"button\" class=\"win-btn\" data-on:click=\"@get('/accounting/journal/new/newrow?index=' + (++$rowCount))\"><span class=\"inline-flex h-4 w-4 items-center justify-center rounded-full bg-blue-600 text-white text-xs font-bold mr-2\">+</span> <span>Add Row</span></button><div class=\"flex items-center gap-3 text-sm font-medium\"><div class=\"px-3 py-1 rounded-md bg-green-100 text-green-700 border border-green-200\"><span class=\"font-semibold\">Debit:</span> <span class=\"ml-1\">1,254.25</span></div><div class=\"px-3 py-1 rounded-md bg-blue-100 text-blue-700 border border-blue-200\"><span class=\"font-semibold\">Credit:</span> <span class=\"ml-1\">1,254.25</span></div></div></div></div></fieldset>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -483,108 +365,160 @@ func JournalEntryRow(index int, ledgers []form.Option) templ.Component {
 			templ_7745c5c3_Var15 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 18, "<div id=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 20, "<div id=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var16 string
 		templ_7745c5c3_Var16, templ_7745c5c3_Err = templ.ResolveAttributeValue(fmt.Sprintf("row-%d", index))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `modules/accounting/views/journal_new.templ`, Line: 231, Col: 35}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `modules/accounting/views/journal_new.templ`, Line: 122, Col: 39}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var16)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 19, "\" class=\"flex items-center gap-2 py-1\"><div class=\"w-28 shrink-0\"><select name=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 21, "\" class=\"flex items-center gap-2 py-1\"><div class=\"w-28 shrink-0\"><select name=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var17 string
 		templ_7745c5c3_Var17, templ_7745c5c3_Err = templ.ResolveAttributeValue(fmt.Sprintf("rows[%d][type]", index))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `modules/accounting/views/journal_new.templ`, Line: 236, Col: 47}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `modules/accounting/views/journal_new.templ`, Line: 125, Col: 47}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var17)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 20, "\" class=\"w-full\"><option value=\"D\">Debit</option> <option value=\"C\">Credit</option></select></div><div class=\"flex-1\"><select name=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 22, "\" data-bind=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var18 string
-		templ_7745c5c3_Var18, templ_7745c5c3_Err = templ.ResolveAttributeValue(fmt.Sprintf("rows[%d][account]", index))
+		templ_7745c5c3_Var18, templ_7745c5c3_Err = templ.ResolveAttributeValue(fmt.Sprintf("rows_%d_type", index))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `modules/accounting/views/journal_new.templ`, Line: 245, Col: 50}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `modules/accounting/views/journal_new.templ`, Line: 126, Col: 50}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var18)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 21, "\" class=\"w-full\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 23, "\" class=\"w-full\"><option value=\"D\">Debit</option> <option value=\"C\">Credit</option></select></div><div class=\"flex-1\"><select name=\"")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		var templ_7745c5c3_Var19 string
+		templ_7745c5c3_Var19, templ_7745c5c3_Err = templ.ResolveAttributeValue(fmt.Sprintf("rows[%d][account]", index))
+		if templ_7745c5c3_Err != nil {
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `modules/accounting/views/journal_new.templ`, Line: 135, Col: 50}
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var19)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 24, "\" data-bind=\"")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		var templ_7745c5c3_Var20 string
+		templ_7745c5c3_Var20, templ_7745c5c3_Err = templ.ResolveAttributeValue(fmt.Sprintf("rows_%d_account", index))
+		if templ_7745c5c3_Err != nil {
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `modules/accounting/views/journal_new.templ`, Line: 136, Col: 53}
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var20)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 25, "\" class=\"w-full\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		for _, l := range ledgers {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 22, "<option value=\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 26, "<option value=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			var templ_7745c5c3_Var19 string
-			templ_7745c5c3_Var19, templ_7745c5c3_Err = templ.ResolveAttributeValue(l.Value)
+			var templ_7745c5c3_Var21 string
+			templ_7745c5c3_Var21, templ_7745c5c3_Err = templ.ResolveAttributeValue(l.Value)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `modules/accounting/views/journal_new.templ`, Line: 249, Col: 28}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `modules/accounting/views/journal_new.templ`, Line: 140, Col: 28}
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var19)
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
-			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 23, "\">")
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var21)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			var templ_7745c5c3_Var20 string
-			templ_7745c5c3_Var20, templ_7745c5c3_Err = templ.JoinStringErrs(l.Label)
-			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `modules/accounting/views/journal_new.templ`, Line: 249, Col: 40}
-			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var20))
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 27, "\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 24, "</option>")
+			var templ_7745c5c3_Var22 string
+			templ_7745c5c3_Var22, templ_7745c5c3_Err = templ.JoinStringErrs(l.Label)
+			if templ_7745c5c3_Err != nil {
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `modules/accounting/views/journal_new.templ`, Line: 140, Col: 40}
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var22))
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 28, "</option>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 25, "</select></div><div class=\"flex-1\"><input type=\"text\" name=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 29, "</select></div><div class=\"flex-1\"><input type=\"text\" name=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		var templ_7745c5c3_Var21 string
-		templ_7745c5c3_Var21, templ_7745c5c3_Err = templ.ResolveAttributeValue(fmt.Sprintf("rows[%d][desc]", index))
+		var templ_7745c5c3_Var23 string
+		templ_7745c5c3_Var23, templ_7745c5c3_Err = templ.ResolveAttributeValue(fmt.Sprintf("rows[%d][desc]", index))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `modules/accounting/views/journal_new.templ`, Line: 256, Col: 47}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `modules/accounting/views/journal_new.templ`, Line: 147, Col: 47}
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var21)
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 26, "\" class=\"w-full\"></div><div class=\"w-32 shrink-0\"><input type=\"number\" name=\"")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var23)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		var templ_7745c5c3_Var22 string
-		templ_7745c5c3_Var22, templ_7745c5c3_Err = templ.ResolveAttributeValue(fmt.Sprintf("rows[%d][amount]", index))
-		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `modules/accounting/views/journal_new.templ`, Line: 263, Col: 49}
-		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var22)
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 30, "\" data-bind=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 27, "\" class=\"w-full text-right\" step=\"0.01\"></div><div class=\"w-24 shrink-0\"><button type=\"button\" class=\"win-btn\">Remove</button></div></div>")
+		var templ_7745c5c3_Var24 string
+		templ_7745c5c3_Var24, templ_7745c5c3_Err = templ.ResolveAttributeValue(fmt.Sprintf("rows_%d_desc", index))
+		if templ_7745c5c3_Err != nil {
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `modules/accounting/views/journal_new.templ`, Line: 148, Col: 50}
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var24)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 31, "\" class=\"w-full\"></div><div class=\"w-32 shrink-0\"><input type=\"number\" name=\"")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		var templ_7745c5c3_Var25 string
+		templ_7745c5c3_Var25, templ_7745c5c3_Err = templ.ResolveAttributeValue(fmt.Sprintf("rows[%d][amount]", index))
+		if templ_7745c5c3_Err != nil {
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `modules/accounting/views/journal_new.templ`, Line: 155, Col: 49}
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var25)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 32, "\" data-bind=\"")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		var templ_7745c5c3_Var26 string
+		templ_7745c5c3_Var26, templ_7745c5c3_Err = templ.ResolveAttributeValue(fmt.Sprintf("rows_%d_amount", index))
+		if templ_7745c5c3_Err != nil {
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `modules/accounting/views/journal_new.templ`, Line: 156, Col: 52}
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var26)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 33, "\" class=\"w-full text-right\" step=\"0.01\"></div>...</div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -609,12 +543,12 @@ func journalFooter() templ.Component {
 			}()
 		}
 		ctx = templ.InitializeContext(ctx)
-		templ_7745c5c3_Var23 := templ.GetChildren(ctx)
-		if templ_7745c5c3_Var23 == nil {
-			templ_7745c5c3_Var23 = templ.NopComponent
+		templ_7745c5c3_Var27 := templ.GetChildren(ctx)
+		if templ_7745c5c3_Var27 == nil {
+			templ_7745c5c3_Var27 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 28, "<div class=\"flex justify-end mt-2\"><div class=\"flex gap-2\"><button type=\"reset\" class=\"win-btn\"><span class=\"font-semibold text-gray-700\">Reset</span></button> <button type=\"submit\" class=\"win-btn\"><span class=\"font-semibold text-gray-700\">💾 Save Journal</span></button></div></div>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 34, "<div class=\"flex justify-end mt-2\"><div class=\"flex gap-2\"><button type=\"reset\" class=\"win-btn\" onclick=\"window.location.reload()\"><span class=\"font-semibold text-gray-700\">Reset</span></button> <button type=\"button\" class=\"win-btn flex items-center gap-1\" data-on:click=\"@post('/accounting/journal/new')\"><span>💾</span> <span class=\"ml-2\">Save Journal</span></button></div></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

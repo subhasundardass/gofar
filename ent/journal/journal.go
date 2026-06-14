@@ -61,7 +61,7 @@ const (
 	// It exists in this package in order to avoid circular dependency with the "journal_line" package.
 	LinesInverseTable = "journal_lines"
 	// LinesColumn is the table column denoting the lines relation/edge.
-	LinesColumn = "journal_lines"
+	LinesColumn = "journal_id"
 )
 
 // Columns holds all SQL columns for journal fields.

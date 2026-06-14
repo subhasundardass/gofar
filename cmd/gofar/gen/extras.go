@@ -11,6 +11,12 @@ import (
 //	go run ./cmd/gofar make:handler name=Refund module=Billing
 //
 // Creates: modules/<module_snake>/handler/<handler_snake>.go
+//
+// The generated handler is wired into the module's `service.Services` bundle
+// (the same pattern used in modules/accounting/service/service.go) and the
+// `handler.Handlers` bundle (the same pattern used in
+// modules/accounting/handler/handler.go). Wiring it into those structs is
+// left to the developer — see the printed next-steps below.
 func MakeHandler(args map[string]string) error {
 	handlerName, ok := args["name"]
 	if !ok || handlerName == "" {
@@ -49,6 +55,11 @@ import (
 // {{.Handler.Pascal}}Handlers handles {{.Handler.Pascal}} HTTP endpoints.
 type {{.Handler.Pascal}}Handlers struct {
 	svc *service.{{.Module.Pascal}}Service
+}
+
+// New{{.Handler.Pascal}}Handlers constructs the {{.Handler.Pascal}}Handlers.
+func New{{.Handler.Pascal}}Handlers(svc *service.{{.Module.Pascal}}Service) *{{.Handler.Pascal}}Handlers {
+	return &{{.Handler.Pascal}}Handlers{svc: svc}
 }
 
 // List handles GET /{{.Module.Kebab}}/{{.Handler.Kebab}}
@@ -108,7 +119,13 @@ func (h *{{.Handler.Pascal}}Handlers) Delete(c *fiber.Ctx) error {
 	}
 
 	fmt.Printf("\n✅ Handler \"%s\" created.\n", h.Pascal)
-	fmt.Printf("   Add it to Handlers struct in modules/%s/handler/handler.go\n", mod.Snake)
+	fmt.Printf("   Add it to the Handlers struct in modules/%s/handler/handler.go, e.g.:\n", mod.Snake)
+	fmt.Printf("       type Handlers struct {\n")
+	fmt.Printf("           %s      *%sHandlers\n", mod.Pascal, mod.Pascal)
+	fmt.Printf("           %s *%sHandlers  // ← add this line\n", h.Pascal, h.Pascal)
+	fmt.Printf("       }\n")
+	fmt.Printf("   And to NewHandlers in the same file:\n")
+	fmt.Printf("       %s: New%sHandlers(svc.%s),\n", h.Pascal, h.Pascal, mod.Pascal)
 	fmt.Printf("   Mount routes in modules/%s/routes.go\n\n", mod.Snake)
 	return nil
 }
@@ -118,6 +135,10 @@ func (h *{{.Handler.Pascal}}Handlers) Delete(c *fiber.Ctx) error {
 //	go run ./cmd/gofar make:service name=TaxCalculator module=Billing
 //
 // Creates: modules/<module_snake>/service/<service_snake>.go
+//
+// Matches the real pattern in modules/base/service/service.go:
+// services take their repository and a *framework/logger.Logger via
+// constructor injection, so they can log without going through the container.
 func MakeService(args map[string]string) error {
 	serviceName, ok := args["name"]
 	if !ok || serviceName == "" {
@@ -147,20 +168,27 @@ func MakeService(args map[string]string) error {
 package service
 
 import (
+	"context"
+
+	"{{.ModPath}}/framework/logger"
 	"{{.ModPath}}/modules/{{.Module.Snake}}/repository"
 )
 
 // {{.Service.Pascal}}Service holds the business logic for {{.Service.Pascal}}.
 type {{.Service.Pascal}}Service struct {
-	repos *repository.Repositories
+	repo   *repository.{{.Module.Pascal}}Repository
+	logger *logger.Logger
 }
 
 // New{{.Service.Pascal}}Service constructs a {{.Service.Pascal}}Service.
-func New{{.Service.Pascal}}Service(repos *repository.Repositories) *{{.Service.Pascal}}Service {
-	return &{{.Service.Pascal}}Service{repos: repos}
+func New{{.Service.Pascal}}Service(repo *repository.{{.Module.Pascal}}Repository, logger *logger.Logger) *{{.Service.Pascal}}Service {
+	return &{{.Service.Pascal}}Service{repo: repo, logger: logger}
 }
 
-// TODO: add use-case methods here.
+// TODO: add use-case methods here. Remember to take ctx context.Context
+// as the first parameter so the service composes with request handlers
+// and background jobs alike.
+var _ = context.Background
 `
 	content, err := renderTemplate("service", tmpl, svcTemplateData{
 		Service: svc, Module: mod, ModPath: modPath,
@@ -175,7 +203,14 @@ func New{{.Service.Pascal}}Service(repos *repository.Repositories) *{{.Service.P
 	}
 
 	fmt.Printf("\n✅ Service \"%s\" created.\n", svc.Pascal)
-	fmt.Printf("   Add it to Services struct in modules/%s/service/service.go\n\n", mod.Snake)
+	fmt.Printf("   Add it to the Services struct in modules/%s/service/service.go, e.g.:\n", mod.Snake)
+	fmt.Printf("       type Services struct {\n")
+	fmt.Printf("           %s *%sService\n", mod.Pascal, mod.Pascal)
+	fmt.Printf("           %s *%sService  // ← add this line\n", svc.Pascal, svc.Pascal)
+	fmt.Printf("       }\n")
+	fmt.Printf("   And to NewServices in the same file:\n")
+	fmt.Printf("       %s: New%sService(repos.%s, logger),\n", svc.Pascal, svc.Pascal, mod.Pascal)
+	fmt.Printf("\n")
 	return nil
 }
 
@@ -212,6 +247,10 @@ func ListModules() error {
 //	go run ./cmd/gofar make:repository name=Invoice module=Billing
 //
 // Creates: modules/<module_snake>/repository/<repository_snake>.go
+//
+// The generated repository satisfies framework/data.Repository[*ent.X] and
+// receives *ent.Client via constructor injection — the same pattern used in
+// modules/accounting/repository/repository.go and modules/base/repository/repository.go.
 func MakeRepository(args map[string]string) error {
 	repoName, ok := args["name"]
 	if !ok || repoName == "" {
@@ -275,7 +314,7 @@ func (r *{{.Repo.Pascal}}Repository) Delete(ctx context.Context, id int) error {
 	return r.db.{{.Repo.Pascal}}.DeleteOneID(id).Exec(ctx)
 }
 
-// TODO: add query methods here.
+// TODO: add query methods here (Create, Update, ListPaginated, …).
 `
 	content, err := renderTemplate("repository", tmpl, repoTemplateData{
 		Repo: repo, Module: mod, ModPath: modPath,
@@ -290,6 +329,13 @@ func (r *{{.Repo.Pascal}}Repository) Delete(ctx context.Context, id int) error {
 	}
 
 	fmt.Printf("\n✅ Repository \"%s\" created.\n", repo.Pascal)
-	fmt.Printf("   Add it to Repositories struct in modules/%s/repository/repository.go\n\n", mod.Snake)
+	fmt.Printf("   Add it to the Repositories struct in modules/%s/repository/repository.go, e.g.:\n", mod.Snake)
+	fmt.Printf("       type Repositories struct {\n")
+	fmt.Printf("           %s *%sRepository\n", mod.Pascal, mod.Pascal)
+	fmt.Printf("           %s *%sRepository  // ← add this line\n", repo.Pascal, repo.Pascal)
+	fmt.Printf("       }\n")
+	fmt.Printf("   And to NewRepositories in the same file:\n")
+	fmt.Printf("       %s: New%sRepository(db),\n", repo.Pascal, repo.Pascal)
+	fmt.Printf("\n")
 	return nil
 }

@@ -858,7 +858,7 @@ func (c *JournalLineClient) QueryJournal(_m *Journal_Line) *JournalQuery {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(journal_line.Table, journal_line.FieldID, id),
 			sqlgraph.To(journal.Table, journal.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, false, journal_line.JournalTable, journal_line.JournalColumn),
+			sqlgraph.Edge(sqlgraph.M2O, true, journal_line.JournalTable, journal_line.JournalColumn),
 		)
 		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
 		return fromV, nil
@@ -874,7 +874,7 @@ func (c *JournalLineClient) QueryLedger(_m *Journal_Line) *LedgerQuery {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(journal_line.Table, journal_line.FieldID, id),
 			sqlgraph.To(ledger.Table, ledger.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, false, journal_line.LedgerTable, journal_line.LedgerColumn),
+			sqlgraph.Edge(sqlgraph.M2O, true, journal_line.LedgerTable, journal_line.LedgerColumn),
 		)
 		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
 		return fromV, nil
@@ -1040,6 +1040,22 @@ func (c *LedgerClient) QueryParty(_m *Ledger) *PartyMasterQuery {
 			sqlgraph.From(ledger.Table, ledger.FieldID, id),
 			sqlgraph.To(partymaster.Table, partymaster.FieldID),
 			sqlgraph.Edge(sqlgraph.O2O, false, ledger.PartyTable, ledger.PartyColumn),
+		)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryJournalLines queries the journal_lines edge of a Ledger.
+func (c *LedgerClient) QueryJournalLines(_m *Ledger) *JournalLineQuery {
+	query := (&JournalLineClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := _m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(ledger.Table, ledger.FieldID, id),
+			sqlgraph.To(journal_line.Table, journal_line.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, ledger.JournalLinesTable, ledger.JournalLinesColumn),
 		)
 		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
 		return fromV, nil

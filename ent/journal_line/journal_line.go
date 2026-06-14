@@ -74,21 +74,10 @@ var Columns = []string{
 	FieldLineNo,
 }
 
-// ForeignKeys holds the SQL foreign-keys that are owned by the "journal_lines"
-// table and are not defined as standalone fields in the schema.
-var ForeignKeys = []string{
-	"journal_lines",
-}
-
 // ValidColumn reports if the column name is valid (part of the table columns).
 func ValidColumn(column string) bool {
 	for i := range Columns {
 		if column == Columns[i] {
-			return true
-		}
-	}
-	for i := range ForeignKeys {
-		if column == ForeignKeys[i] {
 			return true
 		}
 	}
@@ -192,13 +181,13 @@ func newJournalStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(JournalInverseTable, FieldID),
-		sqlgraph.Edge(sqlgraph.M2O, false, JournalTable, JournalColumn),
+		sqlgraph.Edge(sqlgraph.M2O, true, JournalTable, JournalColumn),
 	)
 }
 func newLedgerStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(LedgerInverseTable, FieldID),
-		sqlgraph.Edge(sqlgraph.M2O, false, LedgerTable, LedgerColumn),
+		sqlgraph.Edge(sqlgraph.M2O, true, LedgerTable, LedgerColumn),
 	)
 }

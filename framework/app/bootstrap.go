@@ -126,6 +126,7 @@ func (a *App) setupFiber() error {
 	// static files
 	app.Static("/assets", "./static/assets")
 	app.Static("/uploads", "./static/uploads")
+	app.Static("/", "./static/public")
 
 	// a no-op global middleware slot for future cross-cutting concerns
 	// (request id, auth injection, etc.) — kept last so user middleware in

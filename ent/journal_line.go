@@ -43,9 +43,8 @@ type Journal_Line struct {
 	LineNo int `json:"line_no,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the Journal_LineQuery when eager-loading is set.
-	Edges         Journal_LineEdges `json:"edges"`
-	journal_lines *int
-	selectValues  sql.SelectValues
+	Edges        Journal_LineEdges `json:"edges"`
+	selectValues sql.SelectValues
 }
 
 // Journal_LineEdges holds the relations/edges for other nodes in the graph.
@@ -94,8 +93,6 @@ func (*Journal_Line) scanValues(columns []string) ([]any, error) {
 			values[i] = new(sql.NullString)
 		case journal_line.FieldCreatedAt, journal_line.FieldUpdatedAt:
 			values[i] = new(sql.NullTime)
-		case journal_line.ForeignKeys[0]: // journal_lines
-			values[i] = new(sql.NullInt64)
 		default:
 			values[i] = new(sql.UnknownType)
 		}
@@ -185,13 +182,6 @@ func (_m *Journal_Line) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field line_no", values[i])
 			} else if value.Valid {
 				_m.LineNo = int(value.Int64)
-			}
-		case journal_line.ForeignKeys[0]:
-			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for edge-field journal_lines", value)
-			} else if value.Valid {
-				_m.journal_lines = new(int)
-				*_m.journal_lines = int(value.Int64)
 			}
 		default:
 			_m.selectValues.Set(columns[i], values[i])

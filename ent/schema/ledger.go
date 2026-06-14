@@ -64,5 +64,7 @@ func (Ledger) Edges() []ent.Edge {
 
 		edge.To("party", PartyMaster.Type).
 			Unique(),
+
+		edge.To("journal_lines", Journal_Line.Type),
 	}
 }

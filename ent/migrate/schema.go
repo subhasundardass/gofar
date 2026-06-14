@@ -141,7 +141,6 @@ var (
 		{Name: "reference_type", Type: field.TypeString, Nullable: true},
 		{Name: "reference_id", Type: field.TypeInt, Nullable: true},
 		{Name: "line_no", Type: field.TypeInt, Default: 1},
-		{Name: "journal_lines", Type: field.TypeInt, Nullable: true},
 		{Name: "journal_id", Type: field.TypeInt},
 		{Name: "ledger_id", Type: field.TypeInt},
 	}
@@ -155,17 +154,11 @@ var (
 				Symbol:     "journal_lines_journals_lines",
 				Columns:    []*schema.Column{JournalLinesColumns[10]},
 				RefColumns: []*schema.Column{JournalsColumns[0]},
-				OnDelete:   schema.SetNull,
-			},
-			{
-				Symbol:     "journal_lines_journals_journal",
-				Columns:    []*schema.Column{JournalLinesColumns[11]},
-				RefColumns: []*schema.Column{JournalsColumns[0]},
 				OnDelete:   schema.NoAction,
 			},
 			{
-				Symbol:     "journal_lines_ledgers_ledger",
-				Columns:    []*schema.Column{JournalLinesColumns[12]},
+				Symbol:     "journal_lines_ledgers_journal_lines",
+				Columns:    []*schema.Column{JournalLinesColumns[11]},
 				RefColumns: []*schema.Column{LedgersColumns[0]},
 				OnDelete:   schema.NoAction,
 			},
@@ -174,17 +167,17 @@ var (
 			{
 				Name:    "journal_line_journal_id",
 				Unique:  false,
-				Columns: []*schema.Column{JournalLinesColumns[11]},
+				Columns: []*schema.Column{JournalLinesColumns[10]},
 			},
 			{
 				Name:    "journal_line_ledger_id",
 				Unique:  false,
-				Columns: []*schema.Column{JournalLinesColumns[12]},
+				Columns: []*schema.Column{JournalLinesColumns[11]},
 			},
 			{
 				Name:    "journal_line_journal_id_ledger_id",
 				Unique:  false,
-				Columns: []*schema.Column{JournalLinesColumns[11], JournalLinesColumns[12]},
+				Columns: []*schema.Column{JournalLinesColumns[10], JournalLinesColumns[11]},
 			},
 		},
 	}
@@ -391,8 +384,7 @@ var (
 func init() {
 	AcctGroupsTable.ForeignKeys[0].RefTable = AcctGroupsTable
 	JournalLinesTable.ForeignKeys[0].RefTable = JournalsTable
-	JournalLinesTable.ForeignKeys[1].RefTable = JournalsTable
-	JournalLinesTable.ForeignKeys[2].RefTable = LedgersTable
+	JournalLinesTable.ForeignKeys[1].RefTable = LedgersTable
 	LedgersTable.ForeignKeys[0].RefTable = AcctGroupsTable
 	LedgersTable.ForeignKeys[1].RefTable = AcctGroupsTable
 	PartyMasterTable.ForeignKeys[0].RefTable = LedgersTable

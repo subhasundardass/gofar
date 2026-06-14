@@ -34,6 +34,8 @@ const (
 	EdgeGroup = "group"
 	// EdgeParty holds the string denoting the party edge name in mutations.
 	EdgeParty = "party"
+	// EdgeJournalLines holds the string denoting the journal_lines edge name in mutations.
+	EdgeJournalLines = "journal_lines"
 	// Table holds the table name of the ledger in the database.
 	Table = "ledgers"
 	// GroupTable is the table that holds the group relation/edge.
@@ -50,6 +52,13 @@ const (
 	PartyInverseTable = "party_master"
 	// PartyColumn is the table column denoting the party relation/edge.
 	PartyColumn = "ledger_id"
+	// JournalLinesTable is the table that holds the journal_lines relation/edge.
+	JournalLinesTable = "journal_lines"
+	// JournalLinesInverseTable is the table name for the Journal_Line entity.
+	// It exists in this package in order to avoid circular dependency with the "journal_line" package.
+	JournalLinesInverseTable = "journal_lines"
+	// JournalLinesColumn is the table column denoting the journal_lines relation/edge.
+	JournalLinesColumn = "ledger_id"
 )
 
 // Columns holds all SQL columns for ledger fields.
@@ -166,6 +175,20 @@ func ByPartyField(field string, opts ...sql.OrderTermOption) OrderOption {
 		sqlgraph.OrderByNeighborTerms(s, newPartyStep(), sql.OrderByField(field, opts...))
 	}
 }
+
+// ByJournalLinesCount orders the results by journal_lines count.
+func ByJournalLinesCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newJournalLinesStep(), opts...)
+	}
+}
+
+// ByJournalLines orders the results by journal_lines terms.
+func ByJournalLines(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newJournalLinesStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
 func newGroupStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
@@ -178,5 +201,12 @@ func newPartyStep() *sqlgraph.Step {
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(PartyInverseTable, FieldID),
 		sqlgraph.Edge(sqlgraph.O2O, false, PartyTable, PartyColumn),
+	)
+}
+func newJournalLinesStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(JournalLinesInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, false, JournalLinesTable, JournalLinesColumn),
 	)
 }

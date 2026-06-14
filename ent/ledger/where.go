@@ -526,6 +526,29 @@ func HasPartyWith(preds ...predicate.PartyMaster) predicate.Ledger {
 	})
 }
 
+// HasJournalLines applies the HasEdge predicate on the "journal_lines" edge.
+func HasJournalLines() predicate.Ledger {
+	return predicate.Ledger(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, JournalLinesTable, JournalLinesColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasJournalLinesWith applies the HasEdge predicate on the "journal_lines" edge with a given conditions (other predicates).
+func HasJournalLinesWith(preds ...predicate.Journal_Line) predicate.Ledger {
+	return predicate.Ledger(func(s *sql.Selector) {
+		step := newJournalLinesStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
 // And groups predicates with the AND operator between them.
 func And(predicates ...predicate.Ledger) predicate.Ledger {
 	return predicate.Ledger(sql.AndPredicates(predicates...))

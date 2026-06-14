@@ -48,9 +48,11 @@ type LedgerEdges struct {
 	Group *Acct_Group `json:"group,omitempty"`
 	// Party holds the value of the party edge.
 	Party *PartyMaster `json:"party,omitempty"`
+	// JournalLines holds the value of the journal_lines edge.
+	JournalLines []*Journal_Line `json:"journal_lines,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [2]bool
+	loadedTypes [3]bool
 }
 
 // GroupOrErr returns the Group value or an error if the edge
@@ -73,6 +75,15 @@ func (e LedgerEdges) PartyOrErr() (*PartyMaster, error) {
 		return nil, &NotFoundError{label: partymaster.Label}
 	}
 	return nil, &NotLoadedError{edge: "party"}
+}
+
+// JournalLinesOrErr returns the JournalLines value or an error if the edge
+// was not loaded in eager-loading.
+func (e LedgerEdges) JournalLinesOrErr() ([]*Journal_Line, error) {
+	if e.loadedTypes[2] {
+		return e.JournalLines, nil
+	}
+	return nil, &NotLoadedError{edge: "journal_lines"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -187,6 +198,11 @@ func (_m *Ledger) QueryGroup() *AcctGroupQuery {
 // QueryParty queries the "party" edge of the Ledger entity.
 func (_m *Ledger) QueryParty() *PartyMasterQuery {
 	return NewLedgerClient(_m.config).QueryParty(_m)
+}
+
+// QueryJournalLines queries the "journal_lines" edge of the Ledger entity.
+func (_m *Ledger) QueryJournalLines() *JournalLineQuery {
+	return NewLedgerClient(_m.config).QueryJournalLines(_m)
 }
 
 // Update returns a builder for updating this Ledger.

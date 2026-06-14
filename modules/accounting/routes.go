@@ -22,8 +22,9 @@ func RegisterRoutes(app *fiber.App, h *handler.Handlers) {
 	grp.Get("/ledger", h.Accounting.ListLedger)
 
 	// Journal
-	grp.Get("/journal", h.Accounting.ListJournal)
-	grp.Get("/journal/new", h.Accounting.NewJournal)
-	grp.Get("/journal/new/newrow", h.Accounting.AddRow)
+	grp.Get("/journal", h.Journal.ListJournal)
+	grp.Get("/journal/new", h.Journal.NewJournal)
+	grp.Post("/journal/new", h.Journal.Create)
+	grp.Get("/journal/new/newrow", h.Journal.AddRow)
 
 }

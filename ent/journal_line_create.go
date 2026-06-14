@@ -328,7 +328,7 @@ func (_c *JournalLineCreate) createSpec() (*Journal_Line, *sqlgraph.CreateSpec) 
 	if nodes := _c.mutation.JournalIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
-			Inverse: false,
+			Inverse: true,
 			Table:   journal_line.JournalTable,
 			Columns: []string{journal_line.JournalColumn},
 			Bidi:    false,
@@ -345,7 +345,7 @@ func (_c *JournalLineCreate) createSpec() (*Journal_Line, *sqlgraph.CreateSpec) 
 	if nodes := _c.mutation.LedgerIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
-			Inverse: false,
+			Inverse: true,
 			Table:   journal_line.LedgerTable,
 			Columns: []string{journal_line.LedgerColumn},
 			Bidi:    false,

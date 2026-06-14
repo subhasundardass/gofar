@@ -12,6 +12,7 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/subhasundardas/gofar/ent/acct_group"
+	"github.com/subhasundardas/gofar/ent/journal_line"
 	"github.com/subhasundardas/gofar/ent/ledger"
 	"github.com/subhasundardas/gofar/ent/partymaster"
 	"github.com/subhasundardas/gofar/ent/predicate"
@@ -164,6 +165,21 @@ func (_u *LedgerUpdate) SetParty(v *PartyMaster) *LedgerUpdate {
 	return _u.SetPartyID(v.ID)
 }
 
+// AddJournalLineIDs adds the "journal_lines" edge to the Journal_Line entity by IDs.
+func (_u *LedgerUpdate) AddJournalLineIDs(ids ...int) *LedgerUpdate {
+	_u.mutation.AddJournalLineIDs(ids...)
+	return _u
+}
+
+// AddJournalLines adds the "journal_lines" edges to the Journal_Line entity.
+func (_u *LedgerUpdate) AddJournalLines(v ...*Journal_Line) *LedgerUpdate {
+	ids := make([]int, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.AddJournalLineIDs(ids...)
+}
+
 // Mutation returns the LedgerMutation object of the builder.
 func (_u *LedgerUpdate) Mutation() *LedgerMutation {
 	return _u.mutation
@@ -179,6 +195,27 @@ func (_u *LedgerUpdate) ClearGroup() *LedgerUpdate {
 func (_u *LedgerUpdate) ClearParty() *LedgerUpdate {
 	_u.mutation.ClearParty()
 	return _u
+}
+
+// ClearJournalLines clears all "journal_lines" edges to the Journal_Line entity.
+func (_u *LedgerUpdate) ClearJournalLines() *LedgerUpdate {
+	_u.mutation.ClearJournalLines()
+	return _u
+}
+
+// RemoveJournalLineIDs removes the "journal_lines" edge to Journal_Line entities by IDs.
+func (_u *LedgerUpdate) RemoveJournalLineIDs(ids ...int) *LedgerUpdate {
+	_u.mutation.RemoveJournalLineIDs(ids...)
+	return _u
+}
+
+// RemoveJournalLines removes "journal_lines" edges to Journal_Line entities.
+func (_u *LedgerUpdate) RemoveJournalLines(v ...*Journal_Line) *LedgerUpdate {
+	ids := make([]int, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.RemoveJournalLineIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -325,6 +362,51 @@ func (_u *LedgerUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(partymaster.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if _u.mutation.JournalLinesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   ledger.JournalLinesTable,
+			Columns: []string{ledger.JournalLinesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(journal_line.FieldID, field.TypeInt),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.RemovedJournalLinesIDs(); len(nodes) > 0 && !_u.mutation.JournalLinesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   ledger.JournalLinesTable,
+			Columns: []string{ledger.JournalLinesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(journal_line.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.JournalLinesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   ledger.JournalLinesTable,
+			Columns: []string{ledger.JournalLinesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(journal_line.FieldID, field.TypeInt),
 			},
 		}
 		for _, k := range nodes {
@@ -486,6 +568,21 @@ func (_u *LedgerUpdateOne) SetParty(v *PartyMaster) *LedgerUpdateOne {
 	return _u.SetPartyID(v.ID)
 }
 
+// AddJournalLineIDs adds the "journal_lines" edge to the Journal_Line entity by IDs.
+func (_u *LedgerUpdateOne) AddJournalLineIDs(ids ...int) *LedgerUpdateOne {
+	_u.mutation.AddJournalLineIDs(ids...)
+	return _u
+}
+
+// AddJournalLines adds the "journal_lines" edges to the Journal_Line entity.
+func (_u *LedgerUpdateOne) AddJournalLines(v ...*Journal_Line) *LedgerUpdateOne {
+	ids := make([]int, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.AddJournalLineIDs(ids...)
+}
+
 // Mutation returns the LedgerMutation object of the builder.
 func (_u *LedgerUpdateOne) Mutation() *LedgerMutation {
 	return _u.mutation
@@ -501,6 +598,27 @@ func (_u *LedgerUpdateOne) ClearGroup() *LedgerUpdateOne {
 func (_u *LedgerUpdateOne) ClearParty() *LedgerUpdateOne {
 	_u.mutation.ClearParty()
 	return _u
+}
+
+// ClearJournalLines clears all "journal_lines" edges to the Journal_Line entity.
+func (_u *LedgerUpdateOne) ClearJournalLines() *LedgerUpdateOne {
+	_u.mutation.ClearJournalLines()
+	return _u
+}
+
+// RemoveJournalLineIDs removes the "journal_lines" edge to Journal_Line entities by IDs.
+func (_u *LedgerUpdateOne) RemoveJournalLineIDs(ids ...int) *LedgerUpdateOne {
+	_u.mutation.RemoveJournalLineIDs(ids...)
+	return _u
+}
+
+// RemoveJournalLines removes "journal_lines" edges to Journal_Line entities.
+func (_u *LedgerUpdateOne) RemoveJournalLines(v ...*Journal_Line) *LedgerUpdateOne {
+	ids := make([]int, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.RemoveJournalLineIDs(ids...)
 }
 
 // Where appends a list predicates to the LedgerUpdate builder.
@@ -677,6 +795,51 @@ func (_u *LedgerUpdateOne) sqlSave(ctx context.Context) (_node *Ledger, err erro
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(partymaster.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if _u.mutation.JournalLinesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   ledger.JournalLinesTable,
+			Columns: []string{ledger.JournalLinesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(journal_line.FieldID, field.TypeInt),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.RemovedJournalLinesIDs(); len(nodes) > 0 && !_u.mutation.JournalLinesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   ledger.JournalLinesTable,
+			Columns: []string{ledger.JournalLinesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(journal_line.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.JournalLinesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   ledger.JournalLinesTable,
+			Columns: []string{ledger.JournalLinesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(journal_line.FieldID, field.TypeInt),
 			},
 		}
 		for _, k := range nodes {
