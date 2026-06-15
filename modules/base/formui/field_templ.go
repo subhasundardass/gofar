@@ -10,14 +10,13 @@ import templruntime "github.com/a-h/templ/runtime"
 
 import "github.com/subhasundardas/gofar/framework/form"
 
-// Field is the smart dispatcher — it renders any UIField by inspecting its
-// FieldType and delegating to the correct component. Page templates never
-// need a switch statement on FieldType.
+// Field is the smart dispatcher. It inspects field.Meta.Type and delegates
+// to the correct widget component. Page templates only ever call this.
 //
-// Usage in a page template:
+// Usage:
 //
-//	for _, f := range formui.BuildUIFields(form, inst) {
-//	    @formui.Field(f, formui.DefaultProps())
+//	for _, f := range fields {
+//	    @formui.Field(f, props)
 //	}
 func Field(field form.UIField, props FieldProps) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
@@ -41,12 +40,12 @@ func Field(field form.UIField, props FieldProps) templ.Component {
 		}
 		ctx = templ.ClearChildren(ctx)
 		switch field.Meta.Type {
-		case form.String, form.Email, form.Password, form.Date, form.Time, form.DateTime, form.File, form.Image, form.URL, form.Phone, form.Color, form.Range, form.Hidden:
+		case form.String, form.Email, form.Password, form.URL, form.Phone, form.Date, form.Time, form.DateTime, form.File, form.Color, form.Hidden:
 			templ_7745c5c3_Err = TextField(field, props).Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-		case form.Number:
+		case form.Number, form.Range:
 			templ_7745c5c3_Err = NumberField(field, props).Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
@@ -63,11 +62,6 @@ func Field(field form.UIField, props FieldProps) templ.Component {
 			}
 		case form.TextArea:
 			templ_7745c5c3_Err = TextAreaField(field, props).Render(ctx, templ_7745c5c3_Buffer)
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
-			}
-		case form.Lookup:
-			templ_7745c5c3_Err = LookupField(field, props).Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

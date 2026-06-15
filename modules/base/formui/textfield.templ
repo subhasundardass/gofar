@@ -2,53 +2,62 @@ package formui
 
 import "github.com/subhasundardas/gofar/framework/form"
 
-// TextField renders a single-line text input. It's the workhorse widget
-// for type=text, email, password, url, tel, date, time, datetime-local,
-// file, image, color, range, and hidden — the dispatcher in field.templ
-// routes all of those here.
+// TextField renders <input> for text, email, password, url, tel, date, time,
+// datetime-local, file, color, and hidden fields.
 //
-// Accessibility: a <label for=…> is rendered before the input whenever
-// field.Meta.Label is non-empty. The hint and error paragraphs are
-// referenced from aria-describedby / aria-errormessage so screen-readers
-// announce them at the right moment.
+// Accessibility:
+//   - <label for=…> links to the input when Label is non-empty
+//   - aria-describedby points to the hint id when a hint is present
+//   - aria-errormessage points to the error id; aria-invalid is set on error
+//   - role="alert" on the error paragraph triggers screen-reader announcement
 templ TextField(field form.UIField, props FieldProps) {
 	<div
-		class={ props.WrapperClass }
 		id={ wrapperID(field.Key) }
+		class={ props.WrapperClass }
 		if !field.Visible {
 			hidden
 		}
 	>
+		// if field.Meta.Label != "" {
+		// 	<label for={ fieldID(field) } class={ props.LabelClass }>
+		// 		{ field.Meta.Label }
+		// 		if field.Required {
+		// 			<span class="text-red-500 ml-0.5" aria-hidden="true">*</span>
+		// 		}
+		// 	</label>
+		// }
 		<input
-			type={ fieldType(field.Meta.Type) }
-			id={ fieldID(field, props) }
+			type={ htmlType(field.Meta.Type) }
+			id={ fieldID(field) }
 			name={ field.Key }
-			class={ props.Class }
 			value={ field.Value }
-			placeholder={ props.Placeholder }
-			tabindex={ props.TabIndex }
-			disabled?={ props.ResolveDisabled(field.Writable) }
-			readonly?={ props.ResolveReadonly(field.Writable) }
-			autofocus?={ props.AutoFocus }
+			class={ props.inputClass(field.Error != "") }
+			if field.Meta.Placeholder != "" {
+				placeholder={ field.Meta.Placeholder }
+			}
+			if field.Required {
+				required
+			}
+			if !field.Enabled {
+				disabled
+			}
+			if !field.Writable {
+				readonly
+			}
 			aria-invalid?={ field.Error != "" }
-			aria-errormessage={ errorID(field.Key) }
-			aria-describedby={ hintID(field.Key) }
-			if props.AriaLabel != "" {
-				aria-label={ props.AriaLabel }
+			if field.Meta.Help != "" || field.Error != "" {
+				aria-describedby={ ariaDescribedBy(field.Key, field.Meta.Help != "", field.Error != "") }
 			}
-			if props.AutoComplete != "" {
-				autocomplete={ props.AutoComplete }
-			}
-			if props.Endpoint != "" {
-				data-on:input__debounce.250ms={ liveUpdateAttr(props.Endpoint) }
-			}
-			data-bind={ field.Key }
 		/>
-		if props.HintText != "" && field.Error == "" {
-			<p id={ hintID(field.Key) } class="mt-1 text-xs text-gray-500">{ props.HintText }</p>
+		if field.Meta.Help != "" {
+			<p id={ hintID(field.Key) } class={ props.HintClass }>
+				{ field.Meta.Help }
+			</p>
 		}
 		if field.Error != "" {
-			<p id={ errorID(field.Key) } class="mt-1 text-sm text-red-500" role="alert">{ field.Error }</p>
+			<p id={ errorID(field.Key) } class={ props.ErrorClass } role="alert">
+				{ field.Error }
+			</p>
 		}
 	</div>
 }

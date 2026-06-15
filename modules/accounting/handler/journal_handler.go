@@ -15,22 +15,22 @@ import (
 	"github.com/subhasundardas/gofar/modules/accounting/views"
 )
 
-type JournalHandlers struct {
+type JournalHandler struct {
 	journalSvc *service.JournalServices
 	accSvc     *service.AccountingService
 }
 
-func NewJournalHandlers(
+func NewJournalHandler(
 	acc *service.AccountingService,
-	jr *service.JournalServices) *JournalHandlers {
-	return &JournalHandlers{
+	jr *service.JournalServices) *JournalHandler {
+	return &JournalHandler{
 		journalSvc: jr,
 		accSvc:     acc,
 	}
 }
 
 // -- Journal
-func (h *JournalHandlers) ListJournal(c *fiber.Ctx) error {
+func (h *JournalHandler) ListJournal(c *fiber.Ctx) error {
 	params := data.PaginationParams{
 		Page:    c.QueryInt("page", 1),
 		PerPage: c.QueryInt("per_page", 20),
@@ -44,7 +44,7 @@ func (h *JournalHandlers) ListJournal(c *fiber.Ctx) error {
 	return render.Component(c, views.JournalView("Journal Master", result))
 }
 
-func (h *JournalHandlers) NewJournal(c *fiber.Ctx) error {
+func (h *JournalHandler) NewJournal(c *fiber.Ctx) error {
 	jr := form.New("Journal")
 	jr.Fields(
 		form.DateField{BaseField: form.BaseField{
@@ -89,7 +89,10 @@ func (h *JournalHandlers) NewJournal(c *fiber.Ctx) error {
 	)
 
 	inst := form.NewInstance(jr)
-	fields := form.BuildUIFields(jr, inst)
+	state := form.NewFormState("journal", inst)
+	form.ApplyComputedFields(jr, state)
+
+	fields := form.BuildUIFields(jr, inst, state)
 	fieldMap := form.BuildUIFieldMap(fields)
 
 	// Build the ledger option list for the entry rows' <select> widgets.
@@ -116,7 +119,7 @@ func (h *JournalHandlers) NewJournal(c *fiber.Ctx) error {
 	return render.Component(c, views.JournalNew(props))
 }
 
-func (h *JournalHandlers) AddRow(c *fiber.Ctx) error {
+func (h *JournalHandler) AddRow(c *fiber.Ctx) error {
 	index := c.QueryInt("index", 1)
 	ledgers, err := h.accSvc.ListAllLedgers(c.Context())
 	if err != nil {
@@ -141,7 +144,7 @@ func (h *JournalHandlers) AddRow(c *fiber.Ctx) error {
 }
 
 // Create
-func (h *JournalHandlers) Create(c *fiber.Ctx) error {
+func (h *JournalHandler) Create(c *fiber.Ctx) error {
 	var signals map[string]interface{}
 	if err := c.BodyParser(&signals); err != nil {
 		return response.Error(c, err)

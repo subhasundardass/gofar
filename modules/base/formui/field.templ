@@ -2,20 +2,19 @@ package formui
 
 import "github.com/subhasundardas/gofar/framework/form"
 
-// Field is the smart dispatcher — it renders any UIField by inspecting its
-// FieldType and delegating to the correct component. Page templates never
-// need a switch statement on FieldType.
+// Field is the smart dispatcher. It inspects field.Meta.Type and delegates
+// to the correct widget component. Page templates only ever call this.
 //
-// Usage in a page template:
+// Usage:
 //
-//	for _, f := range formui.BuildUIFields(form, inst) {
-//	    @formui.Field(f, formui.DefaultProps())
+//	for _, f := range fields {
+//	    @formui.Field(f, props)
 //	}
 templ Field(field form.UIField, props FieldProps) {
 	switch field.Meta.Type {
-		case form.String, form.Email, form.Password, form.Date, form.Time, form.DateTime, form.File, form.Image, form.URL, form.Phone, form.Color, form.Range, form.Hidden:
+		case form.String, form.Email, form.Password, form.URL, form.Phone, form.Date, form.Time, form.DateTime, form.File, form.Color, form.Hidden:
 			@TextField(field, props)
-		case form.Number:
+		case form.Number, form.Range:
 			@NumberField(field, props)
 		case form.Select, form.Radio:
 			@SelectField(field, props)
@@ -23,8 +22,6 @@ templ Field(field form.UIField, props FieldProps) {
 			@CheckboxField(field, props)
 		case form.TextArea:
 			@TextAreaField(field, props)
-		case form.Lookup:
-			@LookupField(field, props)
 		default:
 			@TextField(field, props)
 	}

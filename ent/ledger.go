@@ -31,10 +31,22 @@ type Ledger struct {
 	Code string `json:"code,omitempty"`
 	// Name holds the value of the "name" field.
 	Name string `json:"name,omitempty"`
+	// Alias holds the value of the "alias" field.
+	Alias string `json:"alias,omitempty"`
 	// Description holds the value of the "description" field.
 	Description string `json:"description,omitempty"`
+	// OpeningBalance holds the value of the "opening_balance" field.
+	OpeningBalance float64 `json:"opening_balance,omitempty"`
 	// Current balance
 	Balance float64 `json:"balance,omitempty"`
+	// Built-in system ledger
+	IsSystem bool `json:"is_system,omitempty"`
+	// IsParty holds the value of the "is_party" field.
+	IsParty bool `json:"is_party,omitempty"`
+	// IsBank holds the value of the "is_bank" field.
+	IsBank bool `json:"is_bank,omitempty"`
+	// IsCash holds the value of the "is_cash" field.
+	IsCash bool `json:"is_cash,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the LedgerQuery when eager-loading is set.
 	Edges              LedgerEdges `json:"edges"`
@@ -91,11 +103,13 @@ func (*Ledger) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case ledger.FieldBalance:
+		case ledger.FieldIsSystem, ledger.FieldIsParty, ledger.FieldIsBank, ledger.FieldIsCash:
+			values[i] = new(sql.NullBool)
+		case ledger.FieldOpeningBalance, ledger.FieldBalance:
 			values[i] = new(sql.NullFloat64)
 		case ledger.FieldID, ledger.FieldStatus, ledger.FieldGroupID:
 			values[i] = new(sql.NullInt64)
-		case ledger.FieldCode, ledger.FieldName, ledger.FieldDescription:
+		case ledger.FieldCode, ledger.FieldName, ledger.FieldAlias, ledger.FieldDescription:
 			values[i] = new(sql.NullString)
 		case ledger.FieldCreatedAt, ledger.FieldUpdatedAt:
 			values[i] = new(sql.NullTime)
@@ -158,17 +172,53 @@ func (_m *Ledger) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				_m.Name = value.String
 			}
+		case ledger.FieldAlias:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field alias", values[i])
+			} else if value.Valid {
+				_m.Alias = value.String
+			}
 		case ledger.FieldDescription:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field description", values[i])
 			} else if value.Valid {
 				_m.Description = value.String
 			}
+		case ledger.FieldOpeningBalance:
+			if value, ok := values[i].(*sql.NullFloat64); !ok {
+				return fmt.Errorf("unexpected type %T for field opening_balance", values[i])
+			} else if value.Valid {
+				_m.OpeningBalance = value.Float64
+			}
 		case ledger.FieldBalance:
 			if value, ok := values[i].(*sql.NullFloat64); !ok {
 				return fmt.Errorf("unexpected type %T for field balance", values[i])
 			} else if value.Valid {
 				_m.Balance = value.Float64
+			}
+		case ledger.FieldIsSystem:
+			if value, ok := values[i].(*sql.NullBool); !ok {
+				return fmt.Errorf("unexpected type %T for field is_system", values[i])
+			} else if value.Valid {
+				_m.IsSystem = value.Bool
+			}
+		case ledger.FieldIsParty:
+			if value, ok := values[i].(*sql.NullBool); !ok {
+				return fmt.Errorf("unexpected type %T for field is_party", values[i])
+			} else if value.Valid {
+				_m.IsParty = value.Bool
+			}
+		case ledger.FieldIsBank:
+			if value, ok := values[i].(*sql.NullBool); !ok {
+				return fmt.Errorf("unexpected type %T for field is_bank", values[i])
+			} else if value.Valid {
+				_m.IsBank = value.Bool
+			}
+		case ledger.FieldIsCash:
+			if value, ok := values[i].(*sql.NullBool); !ok {
+				return fmt.Errorf("unexpected type %T for field is_cash", values[i])
+			} else if value.Valid {
+				_m.IsCash = value.Bool
 			}
 		case ledger.ForeignKeys[0]:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
@@ -246,11 +296,29 @@ func (_m *Ledger) String() string {
 	builder.WriteString("name=")
 	builder.WriteString(_m.Name)
 	builder.WriteString(", ")
+	builder.WriteString("alias=")
+	builder.WriteString(_m.Alias)
+	builder.WriteString(", ")
 	builder.WriteString("description=")
 	builder.WriteString(_m.Description)
 	builder.WriteString(", ")
+	builder.WriteString("opening_balance=")
+	builder.WriteString(fmt.Sprintf("%v", _m.OpeningBalance))
+	builder.WriteString(", ")
 	builder.WriteString("balance=")
 	builder.WriteString(fmt.Sprintf("%v", _m.Balance))
+	builder.WriteString(", ")
+	builder.WriteString("is_system=")
+	builder.WriteString(fmt.Sprintf("%v", _m.IsSystem))
+	builder.WriteString(", ")
+	builder.WriteString("is_party=")
+	builder.WriteString(fmt.Sprintf("%v", _m.IsParty))
+	builder.WriteString(", ")
+	builder.WriteString("is_bank=")
+	builder.WriteString(fmt.Sprintf("%v", _m.IsBank))
+	builder.WriteString(", ")
+	builder.WriteString("is_cash=")
+	builder.WriteString(fmt.Sprintf("%v", _m.IsCash))
 	builder.WriteByte(')')
 	return builder.String()
 }

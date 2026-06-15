@@ -16,6 +16,35 @@ type BaseField struct {
 	ReadOnly bool
 	Disabled bool
 
+	// ── Reactive Rule Engine ─────────────────────────────────────────────
+	//
+	// Rules are evaluated lazily against the live FormState each time the
+	// form engine renders or validates. They compose freely:
+	//
+	//   VisibleIf(And(FieldEquals("role", "admin"), FieldNotEmpty("org")))
+	//   RequiredIf(FieldEquals("country", "US"))
+	//   EnabledIf(Not(FieldTrue("locked")))
+	//   ComputedAs(func(s form.FormState) any { return s.Get("a").(string) + s.Get("b").(string) })
+
+	// VisibleIf controls conditional visibility. When the Rule evaluates to
+	// false the field is hidden from the rendered form.
+	VisibleIf Rule
+
+	// EnabledIf controls whether the field is interactive. When false the
+	// field renders as disabled and is excluded from validation.
+	EnabledIf Rule
+
+	// RequiredIf makes required-status dynamic. When true the field is
+	// treated as required even if the static Required flag is false. A
+	// RequiredValidator is injected automatically during Validate().
+	RequiredIf Rule
+
+	// ComputeWith, if set, runs before any validation or rule evaluation.
+	// Its return value is written back into the FormState so downstream
+	// rules and validators see the derived value. Fields with ComputeWith
+	// are normally ReadOnly so the user cannot override the computed result.
+	ComputeWith ComputeFunc
+
 	Validators []Validator
 }
 
@@ -36,6 +65,13 @@ func (f BaseField) GetDefaultValue() any   { return f.DefaultValue }
 func (f BaseField) GetRequired() bool { return f.Required }
 func (f BaseField) GetReadOnly() bool { return f.ReadOnly }
 func (f BaseField) GetDisabled() bool { return f.Disabled }
+
+// ── Rule accessors (used by the runtime) ─────────────────────────────────────
+
+func (f BaseField) GetVisibleIf() Rule    { return f.VisibleIf }
+func (f BaseField) GetEnabledIf() Rule    { return f.EnabledIf }
+func (f BaseField) GetRequiredIf() Rule   { return f.RequiredIf }
+func (f BaseField) GetComputeWith() ComputeFunc { return f.ComputeWith }
 
 // ── Validation ────────────────────────────────────────────────────────────────
 

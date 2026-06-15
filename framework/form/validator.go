@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"net/mail"
 	"net/url"
-	"reflect"
 	"regexp"
 	"strings"
 	"time"
@@ -146,30 +145,9 @@ func (v RequiredValidator) fail() error {
 	}
 }
 
-// isEmpty is the "missing" predicate used by the required check.
-func isEmpty(v any) bool {
-	if v == nil {
-		return true
-	}
-	switch x := v.(type) {
-	case string:
-		return strings.TrimSpace(x) == ""
-	case []string:
-		return len(x) == 0
-	case []any:
-		return len(x) == 0
-	case map[string]any:
-		return len(x) == 0
-	case []rune:
-		return len(x) == 0
-	}
-	rv := reflect.ValueOf(v)
-	switch rv.Kind() {
-	case reflect.Slice, reflect.Array, reflect.Map, reflect.String:
-		return rv.Len() == 0
-	}
-	return false
-}
+// =============================================================================
+// Internal helpers
+// =============================================================================
 
 // isZero reports whether v is the type's zero value. Used by NonZero.
 func isZero(v any) bool {

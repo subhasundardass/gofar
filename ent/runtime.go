@@ -197,14 +197,40 @@ func init() {
 			return nil
 		}
 	}()
+	// ledgerDescAlias is the schema descriptor for alias field.
+	ledgerDescAlias := ledgerFields[3].Descriptor()
+	// ledger.DefaultAlias holds the default value on creation for the alias field.
+	ledger.DefaultAlias = ledgerDescAlias.Default.(string)
+	// ledger.AliasValidator is a validator for the "alias" field. It is called by the builders before save.
+	ledger.AliasValidator = ledgerDescAlias.Validators[0].(func(string) error)
 	// ledgerDescDescription is the schema descriptor for description field.
-	ledgerDescDescription := ledgerFields[3].Descriptor()
+	ledgerDescDescription := ledgerFields[4].Descriptor()
 	// ledger.DefaultDescription holds the default value on creation for the description field.
 	ledger.DefaultDescription = ledgerDescDescription.Default.(string)
+	// ledgerDescOpeningBalance is the schema descriptor for opening_balance field.
+	ledgerDescOpeningBalance := ledgerFields[5].Descriptor()
+	// ledger.DefaultOpeningBalance holds the default value on creation for the opening_balance field.
+	ledger.DefaultOpeningBalance = ledgerDescOpeningBalance.Default.(float64)
 	// ledgerDescBalance is the schema descriptor for balance field.
-	ledgerDescBalance := ledgerFields[4].Descriptor()
+	ledgerDescBalance := ledgerFields[6].Descriptor()
 	// ledger.DefaultBalance holds the default value on creation for the balance field.
 	ledger.DefaultBalance = ledgerDescBalance.Default.(float64)
+	// ledgerDescIsSystem is the schema descriptor for is_system field.
+	ledgerDescIsSystem := ledgerFields[7].Descriptor()
+	// ledger.DefaultIsSystem holds the default value on creation for the is_system field.
+	ledger.DefaultIsSystem = ledgerDescIsSystem.Default.(bool)
+	// ledgerDescIsParty is the schema descriptor for is_party field.
+	ledgerDescIsParty := ledgerFields[8].Descriptor()
+	// ledger.DefaultIsParty holds the default value on creation for the is_party field.
+	ledger.DefaultIsParty = ledgerDescIsParty.Default.(bool)
+	// ledgerDescIsBank is the schema descriptor for is_bank field.
+	ledgerDescIsBank := ledgerFields[9].Descriptor()
+	// ledger.DefaultIsBank holds the default value on creation for the is_bank field.
+	ledger.DefaultIsBank = ledgerDescIsBank.Default.(bool)
+	// ledgerDescIsCash is the schema descriptor for is_cash field.
+	ledgerDescIsCash := ledgerFields[10].Descriptor()
+	// ledger.DefaultIsCash holds the default value on creation for the is_cash field.
+	ledger.DefaultIsCash = ledgerDescIsCash.Default.(bool)
 	partymasterMixin := schema.PartyMaster{}.Mixin()
 	partymasterMixinFields0 := partymasterMixin[0].Fields()
 	_ = partymasterMixinFields0

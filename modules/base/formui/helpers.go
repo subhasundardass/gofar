@@ -1,20 +1,33 @@
 package formui
 
-import "github.com/subhasundardas/gofar/framework/form"
+import (
+	"strings"
 
-// fieldID returns props.ID if set, otherwise field.Key.
-func fieldID(field form.UIField, props FieldProps) string {
-	if props.ID != "" {
-		return props.ID
-	}
-	return field.Key
-}
+	"github.com/subhasundardas/gofar/framework/form"
+)
 
-// fieldType maps a semantic FieldType to the matching HTML input type
-// attribute. Anything we don't recognise falls back to "text" — Datastar
-// and the form engine don't care which input type is rendered as long as
-// the value round-trips.
-func fieldType(t form.FieldType) string {
+// ── Element IDs ───────────────────────────────────────────────────────────────
+
+// fieldID returns the HTML id attribute value for a field's input element.
+func fieldID(field form.UIField) string { return field.Key }
+
+// wrapperID returns a deterministic id for the outer wrapper element.
+// Used by Datastar effects to target and swap the whole field group.
+func wrapperID(key string) string { return "wrapper-" + key }
+
+// hintID returns the id of the hint/help text element.
+// Wired to input's aria-describedby.
+func hintID(key string) string { return "hint-" + key }
+
+// errorID returns the id of the error message element.
+// Wired to input's aria-errormessage.
+func errorID(key string) string { return "error-" + key }
+
+// ── HTML type mapping ─────────────────────────────────────────────────────────
+
+// htmlType maps a form.FieldType to the HTML input type attribute value.
+// Anything unrecognised falls back to "text".
+func htmlType(t form.FieldType) string {
 	switch t {
 	case form.Email:
 		return "email"
@@ -28,16 +41,14 @@ func fieldType(t form.FieldType) string {
 		return "datetime-local"
 	case form.File:
 		return "file"
-	case form.Image:
-		return "image"
 	case form.URL:
 		return "url"
 	case form.Phone:
 		return "tel"
 	case form.Color:
 		return "color"
-	case form.Range:
-		return "range"
+	case form.Number:
+		return "number"
 	case form.Hidden:
 		return "hidden"
 	default:
@@ -45,44 +56,55 @@ func fieldType(t form.FieldType) string {
 	}
 }
 
-// liveUpdateAttr returns the Datastar input-debounce attribute for the
-// given endpoint. Returns an empty string if no endpoint is configured —
-// the caller should then wrap the result in `if` to skip emitting the
-// attribute entirely. Centralising this here means the debounce delay and
-// plugin key are identical across every input template.
-//
-// The format is: data-on:input__debounce.250ms="@post('/path')"
-func liveUpdateAttr(endpoint string) string {
-	if endpoint == "" {
-		return ""
+// ── CSS helpers ───────────────────────────────────────────────────────────────
+
+// cx joins multiple class strings, discarding empty ones.
+// Use instead of the old concatClasses.
+func cx(classes ...string) string {
+	out := make([]string, 0, len(classes))
+	for _, c := range classes {
+		if c = strings.TrimSpace(c); c != "" {
+			out = append(out, c)
+		}
 	}
-	return "@post('" + endpoint + "')"
+	return strings.Join(out, " ")
 }
 
-// rowsOrDefault returns rows if positive, otherwise 3 — the standard
-// single-line textarea height.
-func rowsOrDefault(rows int) int {
-	if rows <= 0 {
-		return 3
+// cxIf returns class when condition is true, else "".
+// Use instead of the old toClass.
+func cxIf(class string, condition bool) string {
+	if condition {
+		return class
 	}
-	return rows
+	return ""
 }
 
-// wrapperID is a deterministic id for the outer <div> so error/hint
-// messages and Datastar effects can target it directly. We avoid clashing
-// with the input's own id by prefixing "wrapper-".
-func wrapperID(key string) string {
-	return "wrapper-" + key
+// ── Value helpers ─────────────────────────────────────────────────────────────
+
+// boolVal reports whether a field value is truthy ("true", "1", "yes", true).
+// Used exclusively by CheckboxField.
+func boolVal(v any) bool {
+	switch x := v.(type) {
+	case bool:
+		return x
+	case string:
+		s := strings.ToLower(strings.TrimSpace(x))
+		return s == "true" || s == "1" || s == "yes"
+	}
+	return false
 }
 
-// hintID is the id used on the hint paragraph so the input can wire
-// aria-describedby to it.
-func hintID(key string) string {
-	return "hint-" + key
-}
+// ── Aria helpers ──────────────────────────────────────────────────────────────
 
-// errorID is the id used on the error paragraph so the input can wire
-// aria-describedby + aria-errormessage to it.
-func errorID(key string) string {
-	return "error-" + key
+// ariaDescribedBy returns a space-separated aria-describedby attribute value,
+// including the hint id (when a hint exists) and the error id (when an error exists).
+func ariaDescribedBy(key string, hasHint, hasError bool) string {
+	var ids []string
+	if hasHint {
+		ids = append(ids, hintID(key))
+	}
+	if hasError {
+		ids = append(ids, errorID(key))
+	}
+	return strings.Join(ids, " ")
 }

@@ -83,6 +83,20 @@ func (_c *LedgerCreate) SetName(v string) *LedgerCreate {
 	return _c
 }
 
+// SetAlias sets the "alias" field.
+func (_c *LedgerCreate) SetAlias(v string) *LedgerCreate {
+	_c.mutation.SetAlias(v)
+	return _c
+}
+
+// SetNillableAlias sets the "alias" field if the given value is not nil.
+func (_c *LedgerCreate) SetNillableAlias(v *string) *LedgerCreate {
+	if v != nil {
+		_c.SetAlias(*v)
+	}
+	return _c
+}
+
 // SetDescription sets the "description" field.
 func (_c *LedgerCreate) SetDescription(v string) *LedgerCreate {
 	_c.mutation.SetDescription(v)
@@ -97,6 +111,20 @@ func (_c *LedgerCreate) SetNillableDescription(v *string) *LedgerCreate {
 	return _c
 }
 
+// SetOpeningBalance sets the "opening_balance" field.
+func (_c *LedgerCreate) SetOpeningBalance(v float64) *LedgerCreate {
+	_c.mutation.SetOpeningBalance(v)
+	return _c
+}
+
+// SetNillableOpeningBalance sets the "opening_balance" field if the given value is not nil.
+func (_c *LedgerCreate) SetNillableOpeningBalance(v *float64) *LedgerCreate {
+	if v != nil {
+		_c.SetOpeningBalance(*v)
+	}
+	return _c
+}
+
 // SetBalance sets the "balance" field.
 func (_c *LedgerCreate) SetBalance(v float64) *LedgerCreate {
 	_c.mutation.SetBalance(v)
@@ -107,6 +135,62 @@ func (_c *LedgerCreate) SetBalance(v float64) *LedgerCreate {
 func (_c *LedgerCreate) SetNillableBalance(v *float64) *LedgerCreate {
 	if v != nil {
 		_c.SetBalance(*v)
+	}
+	return _c
+}
+
+// SetIsSystem sets the "is_system" field.
+func (_c *LedgerCreate) SetIsSystem(v bool) *LedgerCreate {
+	_c.mutation.SetIsSystem(v)
+	return _c
+}
+
+// SetNillableIsSystem sets the "is_system" field if the given value is not nil.
+func (_c *LedgerCreate) SetNillableIsSystem(v *bool) *LedgerCreate {
+	if v != nil {
+		_c.SetIsSystem(*v)
+	}
+	return _c
+}
+
+// SetIsParty sets the "is_party" field.
+func (_c *LedgerCreate) SetIsParty(v bool) *LedgerCreate {
+	_c.mutation.SetIsParty(v)
+	return _c
+}
+
+// SetNillableIsParty sets the "is_party" field if the given value is not nil.
+func (_c *LedgerCreate) SetNillableIsParty(v *bool) *LedgerCreate {
+	if v != nil {
+		_c.SetIsParty(*v)
+	}
+	return _c
+}
+
+// SetIsBank sets the "is_bank" field.
+func (_c *LedgerCreate) SetIsBank(v bool) *LedgerCreate {
+	_c.mutation.SetIsBank(v)
+	return _c
+}
+
+// SetNillableIsBank sets the "is_bank" field if the given value is not nil.
+func (_c *LedgerCreate) SetNillableIsBank(v *bool) *LedgerCreate {
+	if v != nil {
+		_c.SetIsBank(*v)
+	}
+	return _c
+}
+
+// SetIsCash sets the "is_cash" field.
+func (_c *LedgerCreate) SetIsCash(v bool) *LedgerCreate {
+	_c.mutation.SetIsCash(v)
+	return _c
+}
+
+// SetNillableIsCash sets the "is_cash" field if the given value is not nil.
+func (_c *LedgerCreate) SetNillableIsCash(v *bool) *LedgerCreate {
+	if v != nil {
+		_c.SetIsCash(*v)
 	}
 	return _c
 }
@@ -197,13 +281,37 @@ func (_c *LedgerCreate) defaults() {
 		v := ledger.DefaultUpdatedAt()
 		_c.mutation.SetUpdatedAt(v)
 	}
+	if _, ok := _c.mutation.Alias(); !ok {
+		v := ledger.DefaultAlias
+		_c.mutation.SetAlias(v)
+	}
 	if _, ok := _c.mutation.Description(); !ok {
 		v := ledger.DefaultDescription
 		_c.mutation.SetDescription(v)
 	}
+	if _, ok := _c.mutation.OpeningBalance(); !ok {
+		v := ledger.DefaultOpeningBalance
+		_c.mutation.SetOpeningBalance(v)
+	}
 	if _, ok := _c.mutation.Balance(); !ok {
 		v := ledger.DefaultBalance
 		_c.mutation.SetBalance(v)
+	}
+	if _, ok := _c.mutation.IsSystem(); !ok {
+		v := ledger.DefaultIsSystem
+		_c.mutation.SetIsSystem(v)
+	}
+	if _, ok := _c.mutation.IsParty(); !ok {
+		v := ledger.DefaultIsParty
+		_c.mutation.SetIsParty(v)
+	}
+	if _, ok := _c.mutation.IsBank(); !ok {
+		v := ledger.DefaultIsBank
+		_c.mutation.SetIsBank(v)
+	}
+	if _, ok := _c.mutation.IsCash(); !ok {
+		v := ledger.DefaultIsCash
+		_c.mutation.SetIsCash(v)
 	}
 }
 
@@ -237,8 +345,28 @@ func (_c *LedgerCreate) check() error {
 			return &ValidationError{Name: "name", err: fmt.Errorf(`ent: validator failed for field "Ledger.name": %w`, err)}
 		}
 	}
+	if v, ok := _c.mutation.Alias(); ok {
+		if err := ledger.AliasValidator(v); err != nil {
+			return &ValidationError{Name: "alias", err: fmt.Errorf(`ent: validator failed for field "Ledger.alias": %w`, err)}
+		}
+	}
+	if _, ok := _c.mutation.OpeningBalance(); !ok {
+		return &ValidationError{Name: "opening_balance", err: errors.New(`ent: missing required field "Ledger.opening_balance"`)}
+	}
 	if _, ok := _c.mutation.Balance(); !ok {
 		return &ValidationError{Name: "balance", err: errors.New(`ent: missing required field "Ledger.balance"`)}
+	}
+	if _, ok := _c.mutation.IsSystem(); !ok {
+		return &ValidationError{Name: "is_system", err: errors.New(`ent: missing required field "Ledger.is_system"`)}
+	}
+	if _, ok := _c.mutation.IsParty(); !ok {
+		return &ValidationError{Name: "is_party", err: errors.New(`ent: missing required field "Ledger.is_party"`)}
+	}
+	if _, ok := _c.mutation.IsBank(); !ok {
+		return &ValidationError{Name: "is_bank", err: errors.New(`ent: missing required field "Ledger.is_bank"`)}
+	}
+	if _, ok := _c.mutation.IsCash(); !ok {
+		return &ValidationError{Name: "is_cash", err: errors.New(`ent: missing required field "Ledger.is_cash"`)}
 	}
 	if len(_c.mutation.GroupIDs()) == 0 {
 		return &ValidationError{Name: "group", err: errors.New(`ent: missing required edge "Ledger.group"`)}
@@ -289,13 +417,37 @@ func (_c *LedgerCreate) createSpec() (*Ledger, *sqlgraph.CreateSpec) {
 		_spec.SetField(ledger.FieldName, field.TypeString, value)
 		_node.Name = value
 	}
+	if value, ok := _c.mutation.Alias(); ok {
+		_spec.SetField(ledger.FieldAlias, field.TypeString, value)
+		_node.Alias = value
+	}
 	if value, ok := _c.mutation.Description(); ok {
 		_spec.SetField(ledger.FieldDescription, field.TypeString, value)
 		_node.Description = value
 	}
+	if value, ok := _c.mutation.OpeningBalance(); ok {
+		_spec.SetField(ledger.FieldOpeningBalance, field.TypeFloat64, value)
+		_node.OpeningBalance = value
+	}
 	if value, ok := _c.mutation.Balance(); ok {
 		_spec.SetField(ledger.FieldBalance, field.TypeFloat64, value)
 		_node.Balance = value
+	}
+	if value, ok := _c.mutation.IsSystem(); ok {
+		_spec.SetField(ledger.FieldIsSystem, field.TypeBool, value)
+		_node.IsSystem = value
+	}
+	if value, ok := _c.mutation.IsParty(); ok {
+		_spec.SetField(ledger.FieldIsParty, field.TypeBool, value)
+		_node.IsParty = value
+	}
+	if value, ok := _c.mutation.IsBank(); ok {
+		_spec.SetField(ledger.FieldIsBank, field.TypeBool, value)
+		_node.IsBank = value
+	}
+	if value, ok := _c.mutation.IsCash(); ok {
+		_spec.SetField(ledger.FieldIsCash, field.TypeBool, value)
+		_node.IsCash = value
 	}
 	if nodes := _c.mutation.GroupIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{

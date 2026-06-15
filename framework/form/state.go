@@ -305,6 +305,16 @@ func (fs *FormState) FirstError(key string) string {
 	return ""
 }
 
+// GetMeta returns the meta value stored under key, or nil if absent.
+func (fs *FormState) GetMeta(key string) any {
+	fs.mu.RLock()
+	defer fs.mu.RUnlock()
+	if fs.Meta == nil {
+		return nil
+	}
+	return fs.Meta[key]
+}
+
 // Snapshot returns a deep copy of the FormState's mutable maps. Useful
 // when you want to hand data off to a goroutine without holding the lock.
 //

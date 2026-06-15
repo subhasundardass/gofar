@@ -9,40 +9,12 @@ type ModalProps struct {
 	Width       string // "sm", "md", "lg"
 }
 
-templ Modal2(props ModalProps) {
+templ Modal(props ModalProps) {
 	<div
 		id="modal"
 		class="fixed inset-0 z-[9999]"
 		style="display:none"
 		data-cloak
-		data-show="$modal.visible"
-	>
-		<!-- Backdrop -->
-		<div
-			class="absolute inset-0 bg-black/50"
-			data-on:click="$modal.visible = false"
-		></div>
-		<!-- Modal box -->
-		<div class="relative flex items-center justify-center min-h-screen p-4">
-			<div class="bg-white rounded-lg shadow-xl w-full max-w-md">
-				<div class="px-4 py-3 border-b flex justify-between">
-					<h2>sfsd</h2>
-					<button data-on:click="$modal.visible = false">
-						✕
-					</button>
-				</div>
-				<div class="p-4">
-					Modal Content
-				</div>
-			</div>
-		</div>
-	</div>
-}
-
-templ Modal(props ModalProps) {
-	<div
-		id="modal"
-		class="fixed inset-0 z-50"
 		data-show="$modal.visible"
 	>
 		<!-- Backdrop overlay -->

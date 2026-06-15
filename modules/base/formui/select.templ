@@ -2,45 +2,53 @@ package formui
 
 import "github.com/subhasundardas/gofar/framework/form"
 
-// SelectField renders <select> with the field's options. The placeholder,
-// when set, becomes a non-selectable prompt at the top of the list; once
-// a real value is chosen the placeholder stays out of the way.
+// SelectField dispatches to selectDropdown or radioField based on field.Meta.Type.
 templ SelectField(field form.UIField, props FieldProps) {
+	if field.Meta.Type == form.Radio {
+		@radioField(field, props)
+	} else {
+		@selectDropdown(field, props)
+	}
+}
+
+// selectDropdown renders a <select> element.
+//
+// A placeholder <option> is rendered when field.Meta.Placeholder is set.
+// Options come from field.Meta.Options.
+templ selectDropdown(field form.UIField, props FieldProps) {
 	<div
-		class={ props.WrapperClass }
 		id={ wrapperID(field.Key) }
+		class={ props.WrapperClass }
 		if !field.Visible {
 			hidden
 		}
 	>
+		// if field.Meta.Label != "" {
+		// 	<label for={ fieldID(field) } class={ props.LabelClass }>
+		// 		{ field.Meta.Label }
+		// 		if field.Required {
+		// 			<span class="text-red-500 ml-0.5" aria-hidden="true">*</span>
+		// 		}
+		// 	</label>
+		// }
 		<select
-			id={ fieldID(field, props) }
+			id={ fieldID(field) }
 			name={ field.Key }
-			class={ "w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm text-gray-800 " +
-				"shadow-xs outline-none transition-all " +
-				"focus:border-blue-500 focus:ring-2 focus:ring-blue-200 " +
-				"disabled:bg-gray-100 disabled:text-gray-400 disabled:cursor-not-allowed " +
-				props.Class }
-			tabindex={ props.TabIndex }
-			disabled?={ props.ResolveDisabled(field.Writable) }
+			class={ props.inputClass(field.Error != "") }
+			if field.Required {
+				required
+			}
+			if !field.Enabled {
+				disabled
+			}
 			aria-invalid?={ field.Error != "" }
-			aria-errormessage={ errorID(field.Key) }
-			aria-describedby={ hintID(field.Key) }
-			if props.AriaLabel != "" {
-				aria-label={ props.AriaLabel }
+			if field.Meta.Help != "" || field.Error != "" {
+				aria-describedby={ ariaDescribedBy(field.Key, field.Meta.Help != "", field.Error != "") }
 			}
-			if props.Endpoint != "" {
-				data-on:input__debounce.250ms={ liveUpdateAttr(props.Endpoint) }
-			}
-			data-bind={ field.Key }
 		>
-			if props.Placeholder != "" {
-				<option
-					value=""
-					hidden?={ field.Value != "" }
-					selected?={ field.Value == "" }
-				>
-					{ props.Placeholder }
+			if field.Meta.Placeholder != "" {
+				<option value="" selected?={ field.Value == "" } disabled hidden>
+					{ field.Meta.Placeholder }
 				</option>
 			}
 			for _, opt := range field.Meta.Options {
@@ -49,11 +57,70 @@ templ SelectField(field form.UIField, props FieldProps) {
 				</option>
 			}
 		</select>
-		if props.HintText != "" && field.Error == "" {
-			<p id={ hintID(field.Key) } class="mt-1 text-xs text-gray-500">{ props.HintText }</p>
+		if field.Meta.Help != "" {
+			<p id={ hintID(field.Key) } class={ props.HintClass }>
+				{ field.Meta.Help }
+			</p>
 		}
 		if field.Error != "" {
-			<p id={ errorID(field.Key) } class="mt-1 text-sm text-red-500" role="alert">{ field.Error }</p>
+			<p id={ errorID(field.Key) } class={ props.ErrorClass } role="alert">
+				{ field.Error }
+			</p>
 		}
 	</div>
+}
+
+// radioField renders radio buttons, one per option.
+// Uses <fieldset> + <legend> for correct semantics and screen-reader grouping.
+templ radioField(field form.UIField, props FieldProps) {
+	<fieldset
+		id={ wrapperID(field.Key) }
+		class={ props.WrapperClass }
+		if !field.Visible {
+			hidden
+		}
+	>
+		if field.Meta.Label != "" {
+			<legend class={ props.LabelClass }>
+				{ field.Meta.Label }
+				if field.Required {
+					<span class="text-red-500 ml-0.5" aria-hidden="true">*</span>
+				}
+			</legend>
+		}
+		<div class="space-y-2">
+			for _, opt := range field.Meta.Options {
+				<label class="flex items-center gap-2 cursor-pointer">
+					<input
+						type="radio"
+						name={ field.Key }
+						value={ opt.Value }
+						checked?={ field.Value == opt.Value }
+						class={ props.InputClass }
+						if field.Required {
+							required
+						}
+						if !field.Enabled {
+							disabled
+						}
+						aria-invalid?={ field.Error != "" }
+						if field.Error != "" {
+							aria-errormessage={ errorID(field.Key) }
+						}
+					/>
+					<span>{ opt.Label }</span>
+				</label>
+			}
+		</div>
+		if field.Meta.Help != "" {
+			<p id={ hintID(field.Key) } class={ props.HintClass }>
+				{ field.Meta.Help }
+			</p>
+		}
+		if field.Error != "" {
+			<p id={ errorID(field.Key) } class={ props.ErrorClass } role="alert">
+				{ field.Error }
+			</p>
+		}
+	</fieldset>
 }

@@ -3,21 +3,15 @@ package form
 import "fmt"
 
 // FieldType is a typed alias for the string values stored on BaseField.Type.
-// Using a typed alias (not a `type FieldType string` distinct type) keeps
-// the existing BaseField.Type field backward-compatible while giving the
-// renderer and dispatcher a single source of truth and a set of canonical
-// constants to switch on.
 type FieldType = string
 
-// Canonical field types. The constants match the strings produced by the
-// TextInput / NumberInput / … helpers in inputs.go. Use these names in
-// switch statements and in tests so a typo becomes a compile error.
+// Canonical field types.
 const (
 	String   FieldType = "text"
 	Email    FieldType = "email"
 	Password FieldType = "password"
 	Number   FieldType = "number"
-	Bool     FieldType = "checkbox" // boolean — single checkbox
+	Bool     FieldType = "checkbox"
 	TextArea FieldType = "textarea"
 	Select   FieldType = "select"
 	Radio    FieldType = "radio"
@@ -28,10 +22,11 @@ const (
 	Image    FieldType = "image"
 	URL      FieldType = "url"
 	Phone    FieldType = "phone"
+	Money    FieldType = "money"
 	Color    FieldType = "color"
 	Range    FieldType = "range"
 	Hidden   FieldType = "hidden"
-	Lookup   FieldType = "lookup" // search-as-you-type combobox
+	Lookup   FieldType = "lookup"
 )
 
 // Option is a single (value, label) pair rendered by SelectField / LookupField.
@@ -40,55 +35,60 @@ type Option struct {
 	Label string `json:"label"`
 }
 
-// FieldMeta is the presentation-level metadata about a field that a
-// renderer needs but that should not live on the per-request *Instance.
-// Pulling it out keeps the form schema stable and shareable across many
-// requests while still letting the renderer know "this is a required
-// email field" or "this select has these options".
+// FieldMeta is the presentation-level metadata about a field that a renderer
+// needs but should not live on the per-request *Instance.
 type FieldMeta struct {
-	Type     FieldType
-	Label    string
-	Required bool
-	Options  []Option
-	// Help is widget-level guidance (e.g. "min 8 chars"). Exposed to
-	// renderers as helper text under the input.
-	Help string
+	Type        FieldType
+	Label       string
+	Placeholder string
+	Required    bool
+	Options     []Option
+	Help        string
 }
 
 // UIField is the per-request view model a renderer (templ, Datastar, JSON
-// schema) consumes. It bundles together the field's identity, its current
-// value, any validation error, and the presentation hints from FieldMeta.
+// schema) consumes. It bundles the field's identity, its current value,
+// any validation error, presentation hints, and the evaluated rule state.
 //
-// A UIField is intentionally a value type: renderers usually loop over a
-// []UIField and the cost of a copy is negligible. The convenience builders
-// below (BuildUIFields, NewUIField) make it cheap to produce a slice from
-// an *Instance.
+// The Visible/Enabled/Required fields here reflect the live rule evaluations
+// for the current FormState — renderers should read from UIField, not call
+// IsVisible/IsEnabled/IsRequired themselves.
 type UIField struct {
 	Key      string
 	Value    string
 	RawValue any
 	Error    string
-	Writable bool // false → field is read-only or hidden
-	Visible  bool
-	Meta     FieldMeta
+
+	// Rule-evaluated state — always populated by BuildUIFields.
+	Visible  bool // false → hide the field entirely
+	Enabled  bool // false → render as disabled
+	Required bool // true  → show required indicator, validate presence
+	Computed bool // true  → field value is derived, not editable
+
+	// Writable is false when Computed or !Enabled or ReadOnly.
+	Writable bool
+
+	Meta FieldMeta
 }
 
-// NewUIField constructs a UIField from the pieces you already have. Use
-// this from handler code that builds a custom field on the fly.
+// NewUIField constructs a UIField from raw pieces. Used by handler code
+// that builds a custom field on the fly without a Form schema.
 func NewUIField(key, value, err string, meta FieldMeta) UIField {
 	return UIField{
 		Key:      key,
 		Value:    value,
 		RawValue: value,
 		Error:    err,
-		Writable: true,
 		Visible:  true,
+		Enabled:  true,
+		Required: meta.Required,
+		Computed: false,
+		Writable: true,
 		Meta:     meta,
 	}
 }
 
-// ToString coerces the field's current value to a string, regardless of
-// whether it was set as int / bool / nil / etc. Useful inside templates.
+// ToString coerces the field's current value to a string. Useful inside templates.
 func (f UIField) ToString() string {
 	if f.Value != "" {
 		return f.Value
@@ -96,8 +96,7 @@ func (f UIField) ToString() string {
 	return Stringify(f.RawValue)
 }
 
-// Stringify is the package-wide stringification helper. It treats nil as
-// "", bool as "true"/"false", and everything else via fmt.Sprint.
+// Stringify is the package-wide stringification helper.
 func Stringify(v any) string {
 	if v == nil {
 		return ""
@@ -115,33 +114,70 @@ func Stringify(v any) string {
 	}
 }
 
-// BuildUIFields projects a *Form + *Instance pair into a []UIField suitable
-// for a renderer. The order matches the order fields were registered on
-// the Form. Hidden fields are emitted with Visible=false so the dispatcher
-// can decide what to do with them; absent values fall back to the field's
-// DefaultValue so the very first render is populated.
-func BuildUIFields(f *Form, inst *Instance) []UIField {
+// BuildUIFields projects a *Form + *Instance + *FormState into a []UIField
+// suitable for a renderer. All rules (VisibleIf, EnabledIf, RequiredIf,
+// ComputedAs) are evaluated against the live state.
+//
+// Pass state=nil to skip rule evaluation (all fields visible, enabled,
+// using static Required). This keeps callers that don't use the reactive
+// engine working without changes.
+func BuildUIFields(f *Form, inst *Instance, state *FormState) []UIField {
 	if f == nil {
 		return nil
 	}
+
+	// Build an eval state pointer for rule evaluation. We never pass
+	// FormState by value — it contains sync.RWMutex.
+	var evalState *FormState
+	if state != nil {
+		evalState = state.Snapshot()
+	} else if inst != nil {
+		// Synthesise a minimal *FormState from instance values.
+		evalState = &FormState{
+			Values:  cloneAnyMap(inst.Values),
+			Touched: map[string]bool{},
+			Errors:  Errors{},
+		}
+	} else {
+		evalState = &FormState{
+			Values:  map[string]any{},
+			Touched: map[string]bool{},
+			Errors:  Errors{},
+		}
+	}
+
 	fields := f.GetFields()
 	out := make([]UIField, 0, len(fields))
+
 	for _, field := range fields {
+		eval := EvalField(field, evalState)
+
 		meta := FieldMeta{
-			Type:     FieldType(field.GetType()),
-			Label:    field.GetLabel(),
-			Required: field.GetRequired(),
-			Help:     field.GetHelpText(),
+			Type:        FieldType(field.GetType()),
+			Label:       field.GetLabel(),
+			Placeholder: field.GetPlaceholder(),
+			Required:    eval.Required,
+			Help:        field.GetHelpText(),
 		}
+
+		writable := eval.Enabled && !eval.Computed && !field.GetReadOnly()
+
 		uf := UIField{
 			Key:      field.GetKey(),
-			Writable: !field.GetReadOnly() && !field.GetDisabled(),
-			Visible:  true,
+			Visible:  eval.Visible,
+			Enabled:  eval.Enabled,
+			Required: eval.Required,
+			Computed: eval.Computed,
+			Writable: writable,
 			Meta:     meta,
 		}
-		// Pull value from instance, falling back to the field's default.
+
+		// Pull value from instance or state, falling back to default.
 		var raw any
-		if inst != nil {
+		if state != nil {
+			raw = state.Get(field.GetKey())
+		}
+		if raw == nil && inst != nil {
 			raw = inst.Get(field.GetKey())
 		}
 		if raw == nil {
@@ -154,7 +190,17 @@ func BuildUIFields(f *Form, inst *Instance) []UIField {
 		if inst != nil {
 			uf.Error = inst.FirstError(field.GetKey())
 		}
+
 		out = append(out, uf)
 	}
 	return out
+}
+
+// BuildUIFieldMap returns the BuildUIFields result indexed by Key.
+func BuildUIFieldMap(fields []UIField) map[string]UIField {
+	result := make(map[string]UIField, len(fields))
+	for _, field := range fields {
+		result[field.Key] = field
+	}
+	return result
 }

@@ -1,143 +1,114 @@
 package formui
 
-// FieldProps carries presentation-level options for widget components.
-// These are separate from the semantic FieldMeta so the form engine stays
-// decoupled from rendering details.
+// FieldProps carries the CSS class overrides for each part of a form field
+// widget. It is the only coupling between the form engine and the renderer —
+// all layout decisions live here, not inside the templ components.
 //
-// A typical layout has two layers:
+// Two-layer pattern:
 //
-//  1. Module-level defaults — built once at boot via DefaultProps() and
-//     passed to every formui.Field call on every page.
-//  2. Per-call overrides — built with FieldProps{ … } and merged on top of
-//     the defaults with DefaultProps().Merge(override).
+//  1. Module-level theme — built once at startup via DefaultProps() (or one
+//     of the preset constructors) and passed to every @formui.Field call.
+//  2. Per-call overrides — merged via With* fluent helpers so only differences
+//     are applied without mutating the original.
 //
-// That way a page that wants "all inputs bordered blue" sets it once and
-// only overrides what's different per-field.
+// Example:
+//
+//	props := formui.DefaultProps()
+//	@formui.Field(emailField, props.WithInputClass("border-blue-500"))
 type FieldProps struct {
-	// Wrapper / layout
-	WrapperClass string // class on the outer <div>
-	LabelClass   string // class on the <label>
-
-	// Input styling
-	Class string // class on the <input> / <select> / <textarea>
-
-	// Behaviour overrides
-	Placeholder  string
-	TabIndex     int
-	Disabled     bool
-	ReadOnly     bool
-	AutoComplete string // "on" | "off" | "email" | etc.
-	AutoFocus    bool
-	ID           string // overrides field.Key as the HTML id attribute
-
-	// Hint / helper text shown below the input
-	HintText string
-
-	// Textarea-specific
-	Rows int // defaults to 3 if zero
-
-	// Datastar live-update target. Empty string disables live updates.
-	// When set, every input emits data-on:input__debounce.250ms="@post('<endpoint>')".
-	Endpoint string
-
-	// Number-specific HTML attributes
-	Step string // "1", "0.01", "any"
-	Min  string
-	Max  string
-
-	// Accessibility
-	AriaLabel string // overrides field.Meta.Label for screen readers
+	// Outer wrapper div / fieldset
+	WrapperClass string
+	// <label> element
+	LabelClass string
+	// <input> / <select> / <textarea> / <input type="checkbox"> element
+	InputClass string
+	// Error message <p>
+	ErrorClass string
+	// Hint / help text <p>
+	HintClass string
+	// Extra class appended to InputClass when the field has a validation error
+	InputErrorClass string
 }
 
-// DefaultProps returns a FieldProps with sensible defaults applied.
-// Callers should normally start from this and Merge in overrides.
-func DefaultProps() FieldProps {
-	return FieldProps{
-		Rows: 3,
-		Step: "any",
-	}
-}
-
-// Merge returns a new FieldProps where any non-zero value in override
-// replaces the corresponding value in base. Useful for layering
-// module-level defaults with per-field overrides.
-func (base FieldProps) Merge(override FieldProps) FieldProps {
+// Merge returns a new FieldProps where any non-empty field in override
+// replaces the corresponding field in the receiver. The receiver is unchanged.
+func (p FieldProps) Merge(override FieldProps) FieldProps {
 	if override.WrapperClass != "" {
-		base.WrapperClass = override.WrapperClass
+		p.WrapperClass = override.WrapperClass
 	}
 	if override.LabelClass != "" {
-		base.LabelClass = override.LabelClass
+		p.LabelClass = override.LabelClass
 	}
-	if override.Class != "" {
-		base.Class = override.Class
+	if override.InputClass != "" {
+		p.InputClass = override.InputClass
 	}
-	if override.Placeholder != "" {
-		base.Placeholder = override.Placeholder
+	if override.ErrorClass != "" {
+		p.ErrorClass = override.ErrorClass
 	}
-	if override.TabIndex != 0 {
-		base.TabIndex = override.TabIndex
+	if override.HintClass != "" {
+		p.HintClass = override.HintClass
 	}
-	if override.Disabled {
-		base.Disabled = true
+	if override.InputErrorClass != "" {
+		p.InputErrorClass = override.InputErrorClass
 	}
-	if override.ReadOnly {
-		base.ReadOnly = true
-	}
-	if override.AutoComplete != "" {
-		base.AutoComplete = override.AutoComplete
-	}
-	if override.AutoFocus {
-		base.AutoFocus = true
-	}
-	if override.ID != "" {
-		base.ID = override.ID
-	}
-	if override.HintText != "" {
-		base.HintText = override.HintText
-	}
-	if override.Rows != 0 {
-		base.Rows = override.Rows
-	}
-	if override.Endpoint != "" {
-		base.Endpoint = override.Endpoint
-	}
-	if override.Step != "" {
-		base.Step = override.Step
-	}
-	if override.Min != "" {
-		base.Min = override.Min
-	}
-	if override.Max != "" {
-		base.Max = override.Max
-	}
-	if override.AriaLabel != "" {
-		base.AriaLabel = override.AriaLabel
-	}
-	return base
+	return p
 }
 
-// ResolveDisabled collapses the three input-disable signals (the prop, the
-// field's read-only/disabled state, the per-field Writable flag) into a
-// single boolean the templates can render. The rule is:
-//
-//	disabled = props.Disabled || !field.Writable
-//
-// Returning true means the input is *visually* disabled; check the prop
-// separately if you need to distinguish "user disabled" from "field
-// read-only".
-func (p FieldProps) ResolveDisabled(fieldWritable bool) bool {
-	return p.Disabled || !fieldWritable
+// inputClass returns the effective input class — base + error modifier when
+// there is a non-empty error string.
+func (p FieldProps) inputClass(hasError bool) string {
+	if hasError && p.InputErrorClass != "" {
+		return cx(p.InputClass, p.InputErrorClass)
+	}
+	return p.InputClass
 }
 
-// ResolveReadonly collapses the read-only signals. The rule is:
-//
-//	readonly = props.ReadOnly || (props.Disabled == false && !field.Writable)
-//
-// A disabled input is never also read-only — the HTML spec says disabled
-// subsumes read-only, so emitting both is noise.
-func (p FieldProps) ResolveReadonly(fieldWritable bool) bool {
-	if p.Disabled {
-		return false
+// ── Fluent overrides ──────────────────────────────────────────────────────────
+
+func (p FieldProps) WithWrapperClass(c string) FieldProps    { p.WrapperClass = c; return p }
+func (p FieldProps) WithLabelClass(c string) FieldProps      { p.LabelClass = c; return p }
+func (p FieldProps) WithInputClass(c string) FieldProps      { p.InputClass = c; return p }
+func (p FieldProps) WithErrorClass(c string) FieldProps      { p.ErrorClass = c; return p }
+func (p FieldProps) WithHintClass(c string) FieldProps       { p.HintClass = c; return p }
+func (p FieldProps) WithInputErrorClass(c string) FieldProps { p.InputErrorClass = c; return p }
+
+// ── Preset themes ─────────────────────────────────────────────────────────────
+
+// DefaultProps returns the standard stacked-label style.
+// Suitable for most full-width form layouts.
+func DefaultProps() FieldProps {
+	return FieldProps{
+		WrapperClass:    "form-group mb-4",
+		LabelClass:      "block text-sm font-semibold text-gray-700 mb-1",
+		InputClass:      "w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500",
+		ErrorClass:      "text-red-600 text-xs mt-1",
+		HintClass:       "text-gray-500 text-xs mt-1",
+		InputErrorClass: "border-red-500 focus:ring-red-500",
 	}
-	return p.ReadOnly || !fieldWritable
+}
+
+// CompactProps returns a tighter inline style.
+// Use for forms where vertical space is constrained.
+func CompactProps() FieldProps {
+	return FieldProps{
+		WrapperClass:    "flex gap-2 items-center mb-2",
+		LabelClass:      "font-semibold w-32 shrink-0 text-sm text-gray-700",
+		InputClass:      "border rounded px-2 py-1 text-xs flex-1",
+		ErrorClass:      "text-red-500 text-xs",
+		HintClass:       "text-gray-400 text-xs",
+		InputErrorClass: "border-red-500",
+	}
+}
+
+// InlineProps returns a minimal bottom-border-only style.
+// Use for inline field groups or data-entry rows.
+func InlineProps() FieldProps {
+	return FieldProps{
+		WrapperClass:    "flex items-center gap-1 flex-1",
+		LabelClass:      "text-sm font-semibold shrink-0 w-32 text-gray-700",
+		InputClass:      "border-b border-gray-300 px-1 py-0.5 text-sm flex-1 bg-transparent focus:outline-none focus:border-blue-500",
+		ErrorClass:      "text-red-500 text-xs",
+		HintClass:       "text-gray-400 text-xs",
+		InputErrorClass: "border-red-500",
+	}
 }

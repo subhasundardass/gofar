@@ -13,29 +13,35 @@ import (
 
 // Handlers bundles all Accounting handler sets.
 type Handlers struct {
-	Accounting *AccountingHandlers
-	Journal    *JournalHandlers
+	Accounting *AccountingHandler
+	Journal    *JournalHandler
+	Master     *MasterHandler
 }
 
-// AccountingHandlers holds all Accounting HTTP handlers.
-type AccountingHandlers struct {
+// AccountingHandler holds all Accounting HTTP handlers.
+type AccountingHandler struct {
 	svc *service.AccountingService
 }
 
 // NewHandlers constructs all handler sets. Takes services only — never fiber.App.
 func NewHandlers(svc *service.Services) *Handlers {
 	return &Handlers{
-		Accounting: NewAccountingHandlers(svc.Accounting),
-		Journal:    NewJournalHandlers(svc.Accounting, svc.Journal),
+		Accounting: NewAccountingHandler(svc.Accounting),
+		Journal:    NewJournalHandler(svc.Accounting, svc.Journal),
+		Master:     NewMasterHandler(svc.Accounting),
 	}
 }
 
-func NewAccountingHandlers(svc *service.AccountingService) *AccountingHandlers {
-	return &AccountingHandlers{svc: svc}
+//----------------------------------------------
+//--Accounting Handler
+//----------------------------------------------
+
+func NewAccountingHandler(svc *service.AccountingService) *AccountingHandler {
+	return &AccountingHandler{svc: svc}
 }
 
 // -- Chart of Account
-func (h *AccountingHandlers) ChartOfAccount(c *fiber.Ctx) error {
+func (h *AccountingHandler) ChartOfAccount(c *fiber.Ctx) error {
 	params := data.PaginationParams{
 		Page:    c.QueryInt("page", 1),
 		PerPage: c.QueryInt("per_page", 20),
@@ -46,18 +52,4 @@ func (h *AccountingHandlers) ChartOfAccount(c *fiber.Ctx) error {
 		return response.Error(c, err)
 	}
 	return render.Component(c, views.AccountingView("Group Master", result))
-}
-
-// -- Ledgers
-func (h *AccountingHandlers) ListLedger(c *fiber.Ctx) error {
-	params := data.PaginationParams{
-		Page:    c.QueryInt("page", 1),
-		PerPage: c.QueryInt("per_page", 20),
-		Search:  c.Query("q"),
-	}
-	result, err := h.svc.ListLedgers(c.Context(), params)
-	if err != nil {
-		return response.Error(c, err)
-	}
-	return render.Component(c, views.LedgerView("Ledger Master", result))
 }

@@ -1,46 +1,57 @@
 package formui
 
-import (
-	"fmt"
-	"github.com/subhasundardas/gofar/framework/form"
-)
+import "github.com/subhasundardas/gofar/framework/form"
 
-// TextAreaField renders <textarea>. The textarea's value is written into
-// the element body (not a value= attribute) so newlines and leading
-// whitespace survive the round-trip. Rows default to 3.
+// TextAreaField renders <textarea> for multi-line text input.
+//
+// Accessibility: same contract as TextField.
 templ TextAreaField(field form.UIField, props FieldProps) {
 	<div
-		class={ props.WrapperClass }
 		id={ wrapperID(field.Key) }
+		class={ props.WrapperClass }
 		if !field.Visible {
 			hidden
 		}
 	>
+		// if field.Meta.Label != "" {
+		// 	<label for={ fieldID(field) } class={ props.LabelClass }>
+		// 		{ field.Meta.Label }
+		// 		if field.Required {
+		// 			<span class="text-red-500 ml-0.5" aria-hidden="true">*</span>
+		// 		}
+		// 	</label>
+		// }
 		<textarea
-			id={ fieldID(field, props) }
+			id={ fieldID(field) }
 			name={ field.Key }
-			class={ props.Class }
-			placeholder={ props.Placeholder }
-			rows={ fmt.Sprintf("%d", rowsOrDefault(props.Rows)) }
-			tabindex={ props.TabIndex }
-			readonly?={ props.ResolveReadonly(field.Writable) }
-			disabled?={ props.ResolveDisabled(field.Writable) }
+			rows="4"
+			class={ props.inputClass(field.Error != "") }
+			if field.Meta.Placeholder != "" {
+				placeholder={ field.Meta.Placeholder }
+			}
+			if field.Required {
+				required
+			}
+			if !field.Enabled {
+				disabled
+			}
+			if !field.Writable {
+				readonly
+			}
 			aria-invalid?={ field.Error != "" }
-			aria-errormessage={ errorID(field.Key) }
-			aria-describedby={ hintID(field.Key) }
-			if props.AriaLabel != "" {
-				aria-label={ props.AriaLabel }
+			if field.Meta.Help != "" || field.Error != "" {
+				aria-describedby={ ariaDescribedBy(field.Key, field.Meta.Help != "", field.Error != "") }
 			}
-			if props.Endpoint != "" {
-				data-on:input__debounce.250ms={ liveUpdateAttr(props.Endpoint) }
-			}
-			data-bind={ field.Key }
 		>{ field.Value }</textarea>
-		if props.HintText != "" && field.Error == "" {
-			<p id={ hintID(field.Key) } class="mt-1 text-xs text-gray-500">{ props.HintText }</p>
+		if field.Meta.Help != "" {
+			<p id={ hintID(field.Key) } class={ props.HintClass }>
+				{ field.Meta.Help }
+			</p>
 		}
 		if field.Error != "" {
-			<p id={ errorID(field.Key) } class="mt-1 text-sm text-red-500" role="alert">{ field.Error }</p>
+			<p id={ errorID(field.Key) } class={ props.ErrorClass } role="alert">
+				{ field.Error }
+			</p>
 		}
 	</div>
 }

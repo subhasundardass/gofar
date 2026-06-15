@@ -4216,9 +4216,16 @@ type LedgerMutation struct {
 	updated_at           *time.Time
 	code                 *string
 	name                 *string
+	alias                *string
 	description          *string
+	opening_balance      *float64
+	addopening_balance   *float64
 	balance              *float64
 	addbalance           *float64
+	is_system            *bool
+	is_party             *bool
+	is_bank              *bool
+	is_cash              *bool
 	clearedFields        map[string]struct{}
 	group                *int
 	clearedgroup         bool
@@ -4566,6 +4573,55 @@ func (m *LedgerMutation) ResetName() {
 	m.name = nil
 }
 
+// SetAlias sets the "alias" field.
+func (m *LedgerMutation) SetAlias(s string) {
+	m.alias = &s
+}
+
+// Alias returns the value of the "alias" field in the mutation.
+func (m *LedgerMutation) Alias() (r string, exists bool) {
+	v := m.alias
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldAlias returns the old "alias" field's value of the Ledger entity.
+// If the Ledger object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *LedgerMutation) OldAlias(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldAlias is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldAlias requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldAlias: %w", err)
+	}
+	return oldValue.Alias, nil
+}
+
+// ClearAlias clears the value of the "alias" field.
+func (m *LedgerMutation) ClearAlias() {
+	m.alias = nil
+	m.clearedFields[ledger.FieldAlias] = struct{}{}
+}
+
+// AliasCleared returns if the "alias" field was cleared in this mutation.
+func (m *LedgerMutation) AliasCleared() bool {
+	_, ok := m.clearedFields[ledger.FieldAlias]
+	return ok
+}
+
+// ResetAlias resets all changes to the "alias" field.
+func (m *LedgerMutation) ResetAlias() {
+	m.alias = nil
+	delete(m.clearedFields, ledger.FieldAlias)
+}
+
 // SetDescription sets the "description" field.
 func (m *LedgerMutation) SetDescription(s string) {
 	m.description = &s
@@ -4613,6 +4669,62 @@ func (m *LedgerMutation) DescriptionCleared() bool {
 func (m *LedgerMutation) ResetDescription() {
 	m.description = nil
 	delete(m.clearedFields, ledger.FieldDescription)
+}
+
+// SetOpeningBalance sets the "opening_balance" field.
+func (m *LedgerMutation) SetOpeningBalance(f float64) {
+	m.opening_balance = &f
+	m.addopening_balance = nil
+}
+
+// OpeningBalance returns the value of the "opening_balance" field in the mutation.
+func (m *LedgerMutation) OpeningBalance() (r float64, exists bool) {
+	v := m.opening_balance
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldOpeningBalance returns the old "opening_balance" field's value of the Ledger entity.
+// If the Ledger object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *LedgerMutation) OldOpeningBalance(ctx context.Context) (v float64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldOpeningBalance is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldOpeningBalance requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldOpeningBalance: %w", err)
+	}
+	return oldValue.OpeningBalance, nil
+}
+
+// AddOpeningBalance adds f to the "opening_balance" field.
+func (m *LedgerMutation) AddOpeningBalance(f float64) {
+	if m.addopening_balance != nil {
+		*m.addopening_balance += f
+	} else {
+		m.addopening_balance = &f
+	}
+}
+
+// AddedOpeningBalance returns the value that was added to the "opening_balance" field in this mutation.
+func (m *LedgerMutation) AddedOpeningBalance() (r float64, exists bool) {
+	v := m.addopening_balance
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetOpeningBalance resets all changes to the "opening_balance" field.
+func (m *LedgerMutation) ResetOpeningBalance() {
+	m.opening_balance = nil
+	m.addopening_balance = nil
 }
 
 // SetBalance sets the "balance" field.
@@ -4669,6 +4781,150 @@ func (m *LedgerMutation) AddedBalance() (r float64, exists bool) {
 func (m *LedgerMutation) ResetBalance() {
 	m.balance = nil
 	m.addbalance = nil
+}
+
+// SetIsSystem sets the "is_system" field.
+func (m *LedgerMutation) SetIsSystem(b bool) {
+	m.is_system = &b
+}
+
+// IsSystem returns the value of the "is_system" field in the mutation.
+func (m *LedgerMutation) IsSystem() (r bool, exists bool) {
+	v := m.is_system
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldIsSystem returns the old "is_system" field's value of the Ledger entity.
+// If the Ledger object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *LedgerMutation) OldIsSystem(ctx context.Context) (v bool, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldIsSystem is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldIsSystem requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldIsSystem: %w", err)
+	}
+	return oldValue.IsSystem, nil
+}
+
+// ResetIsSystem resets all changes to the "is_system" field.
+func (m *LedgerMutation) ResetIsSystem() {
+	m.is_system = nil
+}
+
+// SetIsParty sets the "is_party" field.
+func (m *LedgerMutation) SetIsParty(b bool) {
+	m.is_party = &b
+}
+
+// IsParty returns the value of the "is_party" field in the mutation.
+func (m *LedgerMutation) IsParty() (r bool, exists bool) {
+	v := m.is_party
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldIsParty returns the old "is_party" field's value of the Ledger entity.
+// If the Ledger object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *LedgerMutation) OldIsParty(ctx context.Context) (v bool, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldIsParty is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldIsParty requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldIsParty: %w", err)
+	}
+	return oldValue.IsParty, nil
+}
+
+// ResetIsParty resets all changes to the "is_party" field.
+func (m *LedgerMutation) ResetIsParty() {
+	m.is_party = nil
+}
+
+// SetIsBank sets the "is_bank" field.
+func (m *LedgerMutation) SetIsBank(b bool) {
+	m.is_bank = &b
+}
+
+// IsBank returns the value of the "is_bank" field in the mutation.
+func (m *LedgerMutation) IsBank() (r bool, exists bool) {
+	v := m.is_bank
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldIsBank returns the old "is_bank" field's value of the Ledger entity.
+// If the Ledger object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *LedgerMutation) OldIsBank(ctx context.Context) (v bool, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldIsBank is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldIsBank requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldIsBank: %w", err)
+	}
+	return oldValue.IsBank, nil
+}
+
+// ResetIsBank resets all changes to the "is_bank" field.
+func (m *LedgerMutation) ResetIsBank() {
+	m.is_bank = nil
+}
+
+// SetIsCash sets the "is_cash" field.
+func (m *LedgerMutation) SetIsCash(b bool) {
+	m.is_cash = &b
+}
+
+// IsCash returns the value of the "is_cash" field in the mutation.
+func (m *LedgerMutation) IsCash() (r bool, exists bool) {
+	v := m.is_cash
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldIsCash returns the old "is_cash" field's value of the Ledger entity.
+// If the Ledger object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *LedgerMutation) OldIsCash(ctx context.Context) (v bool, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldIsCash is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldIsCash requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldIsCash: %w", err)
+	}
+	return oldValue.IsCash, nil
+}
+
+// ResetIsCash resets all changes to the "is_cash" field.
+func (m *LedgerMutation) ResetIsCash() {
+	m.is_cash = nil
 }
 
 // ClearGroup clears the "group" edge to the Acct_Group entity.
@@ -4825,7 +5081,7 @@ func (m *LedgerMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *LedgerMutation) Fields() []string {
-	fields := make([]string, 0, 8)
+	fields := make([]string, 0, 14)
 	if m.status != nil {
 		fields = append(fields, ledger.FieldStatus)
 	}
@@ -4844,11 +5100,29 @@ func (m *LedgerMutation) Fields() []string {
 	if m.name != nil {
 		fields = append(fields, ledger.FieldName)
 	}
+	if m.alias != nil {
+		fields = append(fields, ledger.FieldAlias)
+	}
 	if m.description != nil {
 		fields = append(fields, ledger.FieldDescription)
 	}
+	if m.opening_balance != nil {
+		fields = append(fields, ledger.FieldOpeningBalance)
+	}
 	if m.balance != nil {
 		fields = append(fields, ledger.FieldBalance)
+	}
+	if m.is_system != nil {
+		fields = append(fields, ledger.FieldIsSystem)
+	}
+	if m.is_party != nil {
+		fields = append(fields, ledger.FieldIsParty)
+	}
+	if m.is_bank != nil {
+		fields = append(fields, ledger.FieldIsBank)
+	}
+	if m.is_cash != nil {
+		fields = append(fields, ledger.FieldIsCash)
 	}
 	return fields
 }
@@ -4870,10 +5144,22 @@ func (m *LedgerMutation) Field(name string) (ent.Value, bool) {
 		return m.Code()
 	case ledger.FieldName:
 		return m.Name()
+	case ledger.FieldAlias:
+		return m.Alias()
 	case ledger.FieldDescription:
 		return m.Description()
+	case ledger.FieldOpeningBalance:
+		return m.OpeningBalance()
 	case ledger.FieldBalance:
 		return m.Balance()
+	case ledger.FieldIsSystem:
+		return m.IsSystem()
+	case ledger.FieldIsParty:
+		return m.IsParty()
+	case ledger.FieldIsBank:
+		return m.IsBank()
+	case ledger.FieldIsCash:
+		return m.IsCash()
 	}
 	return nil, false
 }
@@ -4895,10 +5181,22 @@ func (m *LedgerMutation) OldField(ctx context.Context, name string) (ent.Value, 
 		return m.OldCode(ctx)
 	case ledger.FieldName:
 		return m.OldName(ctx)
+	case ledger.FieldAlias:
+		return m.OldAlias(ctx)
 	case ledger.FieldDescription:
 		return m.OldDescription(ctx)
+	case ledger.FieldOpeningBalance:
+		return m.OldOpeningBalance(ctx)
 	case ledger.FieldBalance:
 		return m.OldBalance(ctx)
+	case ledger.FieldIsSystem:
+		return m.OldIsSystem(ctx)
+	case ledger.FieldIsParty:
+		return m.OldIsParty(ctx)
+	case ledger.FieldIsBank:
+		return m.OldIsBank(ctx)
+	case ledger.FieldIsCash:
+		return m.OldIsCash(ctx)
 	}
 	return nil, fmt.Errorf("unknown Ledger field %s", name)
 }
@@ -4950,6 +5248,13 @@ func (m *LedgerMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetName(v)
 		return nil
+	case ledger.FieldAlias:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetAlias(v)
+		return nil
 	case ledger.FieldDescription:
 		v, ok := value.(string)
 		if !ok {
@@ -4957,12 +5262,47 @@ func (m *LedgerMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetDescription(v)
 		return nil
+	case ledger.FieldOpeningBalance:
+		v, ok := value.(float64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetOpeningBalance(v)
+		return nil
 	case ledger.FieldBalance:
 		v, ok := value.(float64)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetBalance(v)
+		return nil
+	case ledger.FieldIsSystem:
+		v, ok := value.(bool)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetIsSystem(v)
+		return nil
+	case ledger.FieldIsParty:
+		v, ok := value.(bool)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetIsParty(v)
+		return nil
+	case ledger.FieldIsBank:
+		v, ok := value.(bool)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetIsBank(v)
+		return nil
+	case ledger.FieldIsCash:
+		v, ok := value.(bool)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetIsCash(v)
 		return nil
 	}
 	return fmt.Errorf("unknown Ledger field %s", name)
@@ -4974,6 +5314,9 @@ func (m *LedgerMutation) AddedFields() []string {
 	var fields []string
 	if m.addstatus != nil {
 		fields = append(fields, ledger.FieldStatus)
+	}
+	if m.addopening_balance != nil {
+		fields = append(fields, ledger.FieldOpeningBalance)
 	}
 	if m.addbalance != nil {
 		fields = append(fields, ledger.FieldBalance)
@@ -4988,6 +5331,8 @@ func (m *LedgerMutation) AddedField(name string) (ent.Value, bool) {
 	switch name {
 	case ledger.FieldStatus:
 		return m.AddedStatus()
+	case ledger.FieldOpeningBalance:
+		return m.AddedOpeningBalance()
 	case ledger.FieldBalance:
 		return m.AddedBalance()
 	}
@@ -5006,6 +5351,13 @@ func (m *LedgerMutation) AddField(name string, value ent.Value) error {
 		}
 		m.AddStatus(v)
 		return nil
+	case ledger.FieldOpeningBalance:
+		v, ok := value.(float64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddOpeningBalance(v)
+		return nil
 	case ledger.FieldBalance:
 		v, ok := value.(float64)
 		if !ok {
@@ -5021,6 +5373,9 @@ func (m *LedgerMutation) AddField(name string, value ent.Value) error {
 // mutation.
 func (m *LedgerMutation) ClearedFields() []string {
 	var fields []string
+	if m.FieldCleared(ledger.FieldAlias) {
+		fields = append(fields, ledger.FieldAlias)
+	}
 	if m.FieldCleared(ledger.FieldDescription) {
 		fields = append(fields, ledger.FieldDescription)
 	}
@@ -5038,6 +5393,9 @@ func (m *LedgerMutation) FieldCleared(name string) bool {
 // error if the field is not defined in the schema.
 func (m *LedgerMutation) ClearField(name string) error {
 	switch name {
+	case ledger.FieldAlias:
+		m.ClearAlias()
+		return nil
 	case ledger.FieldDescription:
 		m.ClearDescription()
 		return nil
@@ -5067,11 +5425,29 @@ func (m *LedgerMutation) ResetField(name string) error {
 	case ledger.FieldName:
 		m.ResetName()
 		return nil
+	case ledger.FieldAlias:
+		m.ResetAlias()
+		return nil
 	case ledger.FieldDescription:
 		m.ResetDescription()
 		return nil
+	case ledger.FieldOpeningBalance:
+		m.ResetOpeningBalance()
+		return nil
 	case ledger.FieldBalance:
 		m.ResetBalance()
+		return nil
+	case ledger.FieldIsSystem:
+		m.ResetIsSystem()
+		return nil
+	case ledger.FieldIsParty:
+		m.ResetIsParty()
+		return nil
+	case ledger.FieldIsBank:
+		m.ResetIsBank()
+		return nil
+	case ledger.FieldIsCash:
+		m.ResetIsCash()
 		return nil
 	}
 	return fmt.Errorf("unknown Ledger field %s", name)

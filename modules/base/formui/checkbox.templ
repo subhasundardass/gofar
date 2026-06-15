@@ -2,49 +2,53 @@ package formui
 
 import "github.com/subhasundardas/gofar/framework/form"
 
-// CheckboxField renders a single boolean checkbox with its label inline.
-// Unlike the other widgets, the label sits *next to* the input rather
-// than above it, so the <label> wraps the <input> to make the whole row
-// clickable.
+// CheckboxField renders a boolean checkbox. The label wraps the input so
+// the entire row is the click target.
 //
-// Boolean values are stored as "true"/"false" strings to match the
-// form.Stringify contract; that round-trips cleanly through HTML and
-// Datastar signals.
+// Boolean values round-trip as "true" / "false" through HTML and Datastar.
 templ CheckboxField(field form.UIField, props FieldProps) {
 	<div
-		class={ props.WrapperClass }
 		id={ wrapperID(field.Key) }
+		class={ props.WrapperClass }
 		if !field.Visible {
 			hidden
 		}
 	>
-		<label class={ "inline-flex items-center gap-2 cursor-pointer " + props.LabelClass }>
+		<label class={ cx("inline-flex items-center gap-2 cursor-pointer", props.LabelClass) }>
 			<input
 				type="checkbox"
-				id={ fieldID(field, props) }
+				id={ fieldID(field) }
 				name={ field.Key }
 				value="true"
-				checked?={ field.Value == "true" }
-				class={ props.Class }
-				tabindex={ props.TabIndex }
-				disabled?={ props.ResolveDisabled(field.Writable) }
+				checked?={ boolVal(field.Value) }
+				class={ props.inputClass(field.Error != "") }
+				if field.Required {
+					required
+				}
+				if !field.Enabled {
+					disabled
+				}
 				aria-invalid?={ field.Error != "" }
-				aria-errormessage={ errorID(field.Key) }
-				aria-describedby={ hintID(field.Key) }
-				if props.AriaLabel != "" {
-					aria-label={ props.AriaLabel }
+				if field.Meta.Help != "" || field.Error != "" {
+					aria-describedby={ ariaDescribedBy(field.Key, field.Meta.Help != "", field.Error != "") }
 				}
 			/>
-			<span>{ field.Meta.Label }</span>
-			if field.Meta.Required {
+			if field.Meta.Label != "" {
+				<span>{ field.Meta.Label }</span>
+			}
+			if field.Required {
 				<span class="text-red-500 ml-0.5" aria-hidden="true">*</span>
 			}
 		</label>
-		if props.HintText != "" && field.Error == "" {
-			<p id={ hintID(field.Key) } class="mt-1 text-xs text-gray-500">{ props.HintText }</p>
+		if field.Meta.Help != "" {
+			<p id={ hintID(field.Key) } class={ props.HintClass }>
+				{ field.Meta.Help }
+			</p>
 		}
 		if field.Error != "" {
-			<p id={ errorID(field.Key) } class="mt-1 text-sm text-red-500" role="alert">{ field.Error }</p>
+			<p id={ errorID(field.Key) } class={ props.ErrorClass } role="alert">
+				{ field.Error }
+			</p>
 		}
 	</div>
 }

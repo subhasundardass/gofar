@@ -189,8 +189,14 @@ var (
 		{Name: "updated_at", Type: field.TypeTime},
 		{Name: "code", Type: field.TypeString, Unique: true},
 		{Name: "name", Type: field.TypeString, Size: 255},
+		{Name: "alias", Type: field.TypeString, Nullable: true, Size: 255, Default: ""},
 		{Name: "description", Type: field.TypeString, Nullable: true, Default: ""},
+		{Name: "opening_balance", Type: field.TypeFloat64, Default: 0},
 		{Name: "balance", Type: field.TypeFloat64, Default: 0},
+		{Name: "is_system", Type: field.TypeBool, Default: false},
+		{Name: "is_party", Type: field.TypeBool, Default: false},
+		{Name: "is_bank", Type: field.TypeBool, Default: false},
+		{Name: "is_cash", Type: field.TypeBool, Default: false},
 		{Name: "acct_group_ledgers", Type: field.TypeInt, Nullable: true},
 		{Name: "group_id", Type: field.TypeInt},
 	}
@@ -202,13 +208,13 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "ledgers_acct_groups_ledgers",
-				Columns:    []*schema.Column{LedgersColumns[8]},
+				Columns:    []*schema.Column{LedgersColumns[14]},
 				RefColumns: []*schema.Column{AcctGroupsColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "ledgers_acct_groups_group",
-				Columns:    []*schema.Column{LedgersColumns[9]},
+				Columns:    []*schema.Column{LedgersColumns[15]},
 				RefColumns: []*schema.Column{AcctGroupsColumns[0]},
 				OnDelete:   schema.NoAction,
 			},
@@ -227,12 +233,12 @@ var (
 			{
 				Name:    "ledger_group_id",
 				Unique:  false,
-				Columns: []*schema.Column{LedgersColumns[9]},
+				Columns: []*schema.Column{LedgersColumns[15]},
 			},
 			{
 				Name:    "ledger_group_id_name",
 				Unique:  false,
-				Columns: []*schema.Column{LedgersColumns[9], LedgersColumns[5]},
+				Columns: []*schema.Column{LedgersColumns[15], LedgersColumns[5]},
 			},
 		},
 	}

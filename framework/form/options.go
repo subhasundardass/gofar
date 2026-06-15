@@ -42,18 +42,17 @@ func ReadOnly() FieldOption {
 	}
 }
 
-// Disabled marks the field as disabled.
+// Disabled marks the field as disabled (static, state-independent).
+// For dynamic enable/disable logic use EnabledIf(rule) instead.
 func Disabled() FieldOption {
 	return func(f *BaseField) {
 		f.Disabled = true
 	}
 }
 
-// Required marks the field as required AND appends a RequiredValidator
-// that knows the field's Key. The Key is captured here (at construction
-// time) rather than at validation time so that error messages can always
-// identify the offending field even if the field is later passed around
-// generically.
+// Required marks the field as statically required AND appends a
+// RequiredValidator so the error message names the field.
+// For dynamic required logic use RequiredIf(rule) instead.
 func Required() FieldOption {
 	return func(f *BaseField) {
 		f.Required = true
@@ -61,8 +60,7 @@ func Required() FieldOption {
 	}
 }
 
-// WithValidator appends a custom validator to the field. Useful for
-// domain-specific rules that don't ship in the box.
+// WithValidator appends a custom validator to the field.
 func WithValidator(v Validator) FieldOption {
 	return func(f *BaseField) {
 		f.Validators = append(f.Validators, v)

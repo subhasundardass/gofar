@@ -29,7 +29,7 @@ func Toast() templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div id=\"toast\" data-show=\"$toast.visible\" class=\"fixed bottom-4 right-4 z-[9999] px-4 py-2 rounded text-white shadow-lg bg-gray-800\"><span data-text=\"$toast.message\"></span> <button class=\"ml-3\" data-on:click=\"$toast.visible=false\">✕</button></div>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div id=\"toast\" class=\"fixed inset-0 z-[9999]\" style=\"display:none\" data-show=\"$toast.visible\" class=\"fixed bottom-4 right-4 z-[9999] px-4 py-2 rounded text-white shadow-lg bg-gray-800\"><span data-text=\"$toast.message\"></span> <button class=\"ml-3\" data-on:click=\"$toast.visible=false\">✕</button></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

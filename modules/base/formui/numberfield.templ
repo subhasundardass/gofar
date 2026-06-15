@@ -2,47 +2,58 @@ package formui
 
 import "github.com/subhasundardas/gofar/framework/form"
 
-// NumberField renders <input type="number"> with the standard step/min/max
-// trio of HTML attributes. Step defaults to "any" (set by DefaultProps),
-// so integer-looking fields will need Step = "1" via per-field props.
+// NumberField renders <input type="number"> (or type="range" for form.Range).
+//
+// Accessibility: same contract as TextField.
 templ NumberField(field form.UIField, props FieldProps) {
 	<div
-		class={ props.WrapperClass }
 		id={ wrapperID(field.Key) }
+		class={ props.WrapperClass }
 		if !field.Visible {
 			hidden
 		}
 	>
+		// if field.Meta.Label != "" {
+		// 	<label for={ fieldID(field) } class={ props.LabelClass }>
+		// 		{ field.Meta.Label }
+		// 		if field.Required {
+		// 			<span class="text-red-500 ml-0.5" aria-hidden="true">*</span>
+		// 		}
+		// 	</label>
+		// }
 		<input
-			type="number"
-			id={ fieldID(field, props) }
+			type={ htmlType(field.Meta.Type) }
+			id={ fieldID(field) }
 			name={ field.Key }
 			value={ field.Value }
-			class={ props.Class }
-			placeholder={ props.Placeholder }
-			step={ props.Step }
-			min={ props.Min }
-			max={ props.Max }
-			tabindex={ props.TabIndex }
-			disabled?={ props.ResolveDisabled(field.Writable) }
-			readonly?={ props.ResolveReadonly(field.Writable) }
-			autofocus?={ props.AutoFocus }
+			step="any"
+			class={ props.inputClass(field.Error != "") }
+			if field.Meta.Placeholder != "" {
+				placeholder={ field.Meta.Placeholder }
+			}
+			if field.Required {
+				required
+			}
+			if !field.Enabled {
+				disabled
+			}
+			if !field.Writable {
+				readonly
+			}
 			aria-invalid?={ field.Error != "" }
-			aria-errormessage={ errorID(field.Key) }
-			aria-describedby={ hintID(field.Key) }
-			if props.AriaLabel != "" {
-				aria-label={ props.AriaLabel }
+			if field.Meta.Help != "" || field.Error != "" {
+				aria-describedby={ ariaDescribedBy(field.Key, field.Meta.Help != "", field.Error != "") }
 			}
-			if props.Endpoint != "" {
-				data-on:input__debounce.250ms={ liveUpdateAttr(props.Endpoint) }
-			}
-			data-bind={ field.Key }
 		/>
-		if props.HintText != "" && field.Error == "" {
-			<p id={ hintID(field.Key) } class="mt-1 text-xs text-gray-500">{ props.HintText }</p>
+		if field.Meta.Help != "" {
+			<p id={ hintID(field.Key) } class={ props.HintClass }>
+				{ field.Meta.Help }
+			</p>
 		}
 		if field.Error != "" {
-			<p id={ errorID(field.Key) } class="mt-1 text-sm text-red-500" role="alert">{ field.Error }</p>
+			<p id={ errorID(field.Key) } class={ props.ErrorClass } role="alert">
+				{ field.Error }
+			</p>
 		}
 	</div>
 }

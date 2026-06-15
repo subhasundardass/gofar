@@ -1,0 +1,61 @@
+package views
+
+import (
+	"github.com/subhasundardas/gofar/framework/form"
+	"github.com/subhasundardas/gofar/modules/base/formui"
+	"github.com/subhasundardas/gofar/views/layouts"
+)
+
+type LedgerViewProps struct {
+	Title     string
+	Form      *form.Form
+	FormState *form.FormState
+	Fields    []form.UIField
+	FieldMap  map[string]form.UIField
+	Errors    map[string]string // For validation errors
+}
+
+templ NewLedgerView(props LedgerViewProps) {
+	@layouts.Base(props.Title) {
+		<div class="">
+			<div class="flex items-center justify-between">
+				<h1 class="text-xl font-bold">{ props.Title }</h1>
+				<a href={ templ.SafeURL("/accounting/journal/new") } class="win-btn-primary">
+					<span class="font-semibold">
+						+ Create New
+					</span>
+				</a>
+			</div>
+			<div style="width: 80%">
+				@ledgerForm(props)
+			</div>
+		</div>
+	}
+}
+
+templ ledgerForm(props LedgerViewProps) {
+	<form class="mt-2">
+		for _, field := range props.Fields {
+			@formui.Field(field, formui.DefaultProps())
+		}
+		<fieldset class="border border-gray-300 rounded-md p-4">
+			<legend class="px-2 text-sm font-semibold text-gray-700">Entry</legend>
+			<div class="flex flex-row gap-2 justify-between">
+				<div class="flex gap-4 items-center">
+					<div class="flex gap-2 items-center flex-1">
+						<label for={ props.FieldMap["code"].Meta.Label } class="w-32 shrink-0">{ props.FieldMap["code"].Meta.Label }</label>
+						<span class="shrink-0">:</span>
+						@formui.TextField(props.FieldMap["code"], formui.FieldProps{})
+					</div>
+				</div>
+				<div class="flex gap-4 items-center">
+					<div class="flex gap-2 items-center flex-1">
+						<label for={ props.FieldMap["name"].Meta.Label } class="w-32 shrink-0">{ props.FieldMap["name"].Meta.Label }</label>
+						<span class="shrink-0">:</span>
+						@formui.TextField(props.FieldMap["name"], formui.FieldProps{})
+					</div>
+				</div>
+			</div>
+		</fieldset>
+	</form>
+}

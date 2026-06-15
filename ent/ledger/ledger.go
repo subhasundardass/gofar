@@ -26,10 +26,22 @@ const (
 	FieldCode = "code"
 	// FieldName holds the string denoting the name field in the database.
 	FieldName = "name"
+	// FieldAlias holds the string denoting the alias field in the database.
+	FieldAlias = "alias"
 	// FieldDescription holds the string denoting the description field in the database.
 	FieldDescription = "description"
+	// FieldOpeningBalance holds the string denoting the opening_balance field in the database.
+	FieldOpeningBalance = "opening_balance"
 	// FieldBalance holds the string denoting the balance field in the database.
 	FieldBalance = "balance"
+	// FieldIsSystem holds the string denoting the is_system field in the database.
+	FieldIsSystem = "is_system"
+	// FieldIsParty holds the string denoting the is_party field in the database.
+	FieldIsParty = "is_party"
+	// FieldIsBank holds the string denoting the is_bank field in the database.
+	FieldIsBank = "is_bank"
+	// FieldIsCash holds the string denoting the is_cash field in the database.
+	FieldIsCash = "is_cash"
 	// EdgeGroup holds the string denoting the group edge name in mutations.
 	EdgeGroup = "group"
 	// EdgeParty holds the string denoting the party edge name in mutations.
@@ -70,8 +82,14 @@ var Columns = []string{
 	FieldGroupID,
 	FieldCode,
 	FieldName,
+	FieldAlias,
 	FieldDescription,
+	FieldOpeningBalance,
 	FieldBalance,
+	FieldIsSystem,
+	FieldIsParty,
+	FieldIsBank,
+	FieldIsCash,
 }
 
 // ForeignKeys holds the SQL foreign-keys that are owned by the "ledgers"
@@ -108,10 +126,24 @@ var (
 	CodeValidator func(string) error
 	// NameValidator is a validator for the "name" field. It is called by the builders before save.
 	NameValidator func(string) error
+	// DefaultAlias holds the default value on creation for the "alias" field.
+	DefaultAlias string
+	// AliasValidator is a validator for the "alias" field. It is called by the builders before save.
+	AliasValidator func(string) error
 	// DefaultDescription holds the default value on creation for the "description" field.
 	DefaultDescription string
+	// DefaultOpeningBalance holds the default value on creation for the "opening_balance" field.
+	DefaultOpeningBalance float64
 	// DefaultBalance holds the default value on creation for the "balance" field.
 	DefaultBalance float64
+	// DefaultIsSystem holds the default value on creation for the "is_system" field.
+	DefaultIsSystem bool
+	// DefaultIsParty holds the default value on creation for the "is_party" field.
+	DefaultIsParty bool
+	// DefaultIsBank holds the default value on creation for the "is_bank" field.
+	DefaultIsBank bool
+	// DefaultIsCash holds the default value on creation for the "is_cash" field.
+	DefaultIsCash bool
 )
 
 // OrderOption defines the ordering options for the Ledger queries.
@@ -152,14 +184,44 @@ func ByName(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldName, opts...).ToFunc()
 }
 
+// ByAlias orders the results by the alias field.
+func ByAlias(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldAlias, opts...).ToFunc()
+}
+
 // ByDescription orders the results by the description field.
 func ByDescription(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldDescription, opts...).ToFunc()
 }
 
+// ByOpeningBalance orders the results by the opening_balance field.
+func ByOpeningBalance(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldOpeningBalance, opts...).ToFunc()
+}
+
 // ByBalance orders the results by the balance field.
 func ByBalance(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldBalance, opts...).ToFunc()
+}
+
+// ByIsSystem orders the results by the is_system field.
+func ByIsSystem(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldIsSystem, opts...).ToFunc()
+}
+
+// ByIsParty orders the results by the is_party field.
+func ByIsParty(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldIsParty, opts...).ToFunc()
+}
+
+// ByIsBank orders the results by the is_bank field.
+func ByIsBank(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldIsBank, opts...).ToFunc()
+}
+
+// ByIsCash orders the results by the is_cash field.
+func ByIsCash(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldIsCash, opts...).ToFunc()
 }
 
 // ByGroupField orders the results by group field.

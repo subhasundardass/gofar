@@ -85,14 +85,44 @@ func Name(v string) predicate.Ledger {
 	return predicate.Ledger(sql.FieldEQ(FieldName, v))
 }
 
+// Alias applies equality check predicate on the "alias" field. It's identical to AliasEQ.
+func Alias(v string) predicate.Ledger {
+	return predicate.Ledger(sql.FieldEQ(FieldAlias, v))
+}
+
 // Description applies equality check predicate on the "description" field. It's identical to DescriptionEQ.
 func Description(v string) predicate.Ledger {
 	return predicate.Ledger(sql.FieldEQ(FieldDescription, v))
 }
 
+// OpeningBalance applies equality check predicate on the "opening_balance" field. It's identical to OpeningBalanceEQ.
+func OpeningBalance(v float64) predicate.Ledger {
+	return predicate.Ledger(sql.FieldEQ(FieldOpeningBalance, v))
+}
+
 // Balance applies equality check predicate on the "balance" field. It's identical to BalanceEQ.
 func Balance(v float64) predicate.Ledger {
 	return predicate.Ledger(sql.FieldEQ(FieldBalance, v))
+}
+
+// IsSystem applies equality check predicate on the "is_system" field. It's identical to IsSystemEQ.
+func IsSystem(v bool) predicate.Ledger {
+	return predicate.Ledger(sql.FieldEQ(FieldIsSystem, v))
+}
+
+// IsParty applies equality check predicate on the "is_party" field. It's identical to IsPartyEQ.
+func IsParty(v bool) predicate.Ledger {
+	return predicate.Ledger(sql.FieldEQ(FieldIsParty, v))
+}
+
+// IsBank applies equality check predicate on the "is_bank" field. It's identical to IsBankEQ.
+func IsBank(v bool) predicate.Ledger {
+	return predicate.Ledger(sql.FieldEQ(FieldIsBank, v))
+}
+
+// IsCash applies equality check predicate on the "is_cash" field. It's identical to IsCashEQ.
+func IsCash(v bool) predicate.Ledger {
+	return predicate.Ledger(sql.FieldEQ(FieldIsCash, v))
 }
 
 // StatusEQ applies the EQ predicate on the "status" field.
@@ -365,6 +395,81 @@ func NameContainsFold(v string) predicate.Ledger {
 	return predicate.Ledger(sql.FieldContainsFold(FieldName, v))
 }
 
+// AliasEQ applies the EQ predicate on the "alias" field.
+func AliasEQ(v string) predicate.Ledger {
+	return predicate.Ledger(sql.FieldEQ(FieldAlias, v))
+}
+
+// AliasNEQ applies the NEQ predicate on the "alias" field.
+func AliasNEQ(v string) predicate.Ledger {
+	return predicate.Ledger(sql.FieldNEQ(FieldAlias, v))
+}
+
+// AliasIn applies the In predicate on the "alias" field.
+func AliasIn(vs ...string) predicate.Ledger {
+	return predicate.Ledger(sql.FieldIn(FieldAlias, vs...))
+}
+
+// AliasNotIn applies the NotIn predicate on the "alias" field.
+func AliasNotIn(vs ...string) predicate.Ledger {
+	return predicate.Ledger(sql.FieldNotIn(FieldAlias, vs...))
+}
+
+// AliasGT applies the GT predicate on the "alias" field.
+func AliasGT(v string) predicate.Ledger {
+	return predicate.Ledger(sql.FieldGT(FieldAlias, v))
+}
+
+// AliasGTE applies the GTE predicate on the "alias" field.
+func AliasGTE(v string) predicate.Ledger {
+	return predicate.Ledger(sql.FieldGTE(FieldAlias, v))
+}
+
+// AliasLT applies the LT predicate on the "alias" field.
+func AliasLT(v string) predicate.Ledger {
+	return predicate.Ledger(sql.FieldLT(FieldAlias, v))
+}
+
+// AliasLTE applies the LTE predicate on the "alias" field.
+func AliasLTE(v string) predicate.Ledger {
+	return predicate.Ledger(sql.FieldLTE(FieldAlias, v))
+}
+
+// AliasContains applies the Contains predicate on the "alias" field.
+func AliasContains(v string) predicate.Ledger {
+	return predicate.Ledger(sql.FieldContains(FieldAlias, v))
+}
+
+// AliasHasPrefix applies the HasPrefix predicate on the "alias" field.
+func AliasHasPrefix(v string) predicate.Ledger {
+	return predicate.Ledger(sql.FieldHasPrefix(FieldAlias, v))
+}
+
+// AliasHasSuffix applies the HasSuffix predicate on the "alias" field.
+func AliasHasSuffix(v string) predicate.Ledger {
+	return predicate.Ledger(sql.FieldHasSuffix(FieldAlias, v))
+}
+
+// AliasIsNil applies the IsNil predicate on the "alias" field.
+func AliasIsNil() predicate.Ledger {
+	return predicate.Ledger(sql.FieldIsNull(FieldAlias))
+}
+
+// AliasNotNil applies the NotNil predicate on the "alias" field.
+func AliasNotNil() predicate.Ledger {
+	return predicate.Ledger(sql.FieldNotNull(FieldAlias))
+}
+
+// AliasEqualFold applies the EqualFold predicate on the "alias" field.
+func AliasEqualFold(v string) predicate.Ledger {
+	return predicate.Ledger(sql.FieldEqualFold(FieldAlias, v))
+}
+
+// AliasContainsFold applies the ContainsFold predicate on the "alias" field.
+func AliasContainsFold(v string) predicate.Ledger {
+	return predicate.Ledger(sql.FieldContainsFold(FieldAlias, v))
+}
+
 // DescriptionEQ applies the EQ predicate on the "description" field.
 func DescriptionEQ(v string) predicate.Ledger {
 	return predicate.Ledger(sql.FieldEQ(FieldDescription, v))
@@ -440,6 +545,46 @@ func DescriptionContainsFold(v string) predicate.Ledger {
 	return predicate.Ledger(sql.FieldContainsFold(FieldDescription, v))
 }
 
+// OpeningBalanceEQ applies the EQ predicate on the "opening_balance" field.
+func OpeningBalanceEQ(v float64) predicate.Ledger {
+	return predicate.Ledger(sql.FieldEQ(FieldOpeningBalance, v))
+}
+
+// OpeningBalanceNEQ applies the NEQ predicate on the "opening_balance" field.
+func OpeningBalanceNEQ(v float64) predicate.Ledger {
+	return predicate.Ledger(sql.FieldNEQ(FieldOpeningBalance, v))
+}
+
+// OpeningBalanceIn applies the In predicate on the "opening_balance" field.
+func OpeningBalanceIn(vs ...float64) predicate.Ledger {
+	return predicate.Ledger(sql.FieldIn(FieldOpeningBalance, vs...))
+}
+
+// OpeningBalanceNotIn applies the NotIn predicate on the "opening_balance" field.
+func OpeningBalanceNotIn(vs ...float64) predicate.Ledger {
+	return predicate.Ledger(sql.FieldNotIn(FieldOpeningBalance, vs...))
+}
+
+// OpeningBalanceGT applies the GT predicate on the "opening_balance" field.
+func OpeningBalanceGT(v float64) predicate.Ledger {
+	return predicate.Ledger(sql.FieldGT(FieldOpeningBalance, v))
+}
+
+// OpeningBalanceGTE applies the GTE predicate on the "opening_balance" field.
+func OpeningBalanceGTE(v float64) predicate.Ledger {
+	return predicate.Ledger(sql.FieldGTE(FieldOpeningBalance, v))
+}
+
+// OpeningBalanceLT applies the LT predicate on the "opening_balance" field.
+func OpeningBalanceLT(v float64) predicate.Ledger {
+	return predicate.Ledger(sql.FieldLT(FieldOpeningBalance, v))
+}
+
+// OpeningBalanceLTE applies the LTE predicate on the "opening_balance" field.
+func OpeningBalanceLTE(v float64) predicate.Ledger {
+	return predicate.Ledger(sql.FieldLTE(FieldOpeningBalance, v))
+}
+
 // BalanceEQ applies the EQ predicate on the "balance" field.
 func BalanceEQ(v float64) predicate.Ledger {
 	return predicate.Ledger(sql.FieldEQ(FieldBalance, v))
@@ -478,6 +623,46 @@ func BalanceLT(v float64) predicate.Ledger {
 // BalanceLTE applies the LTE predicate on the "balance" field.
 func BalanceLTE(v float64) predicate.Ledger {
 	return predicate.Ledger(sql.FieldLTE(FieldBalance, v))
+}
+
+// IsSystemEQ applies the EQ predicate on the "is_system" field.
+func IsSystemEQ(v bool) predicate.Ledger {
+	return predicate.Ledger(sql.FieldEQ(FieldIsSystem, v))
+}
+
+// IsSystemNEQ applies the NEQ predicate on the "is_system" field.
+func IsSystemNEQ(v bool) predicate.Ledger {
+	return predicate.Ledger(sql.FieldNEQ(FieldIsSystem, v))
+}
+
+// IsPartyEQ applies the EQ predicate on the "is_party" field.
+func IsPartyEQ(v bool) predicate.Ledger {
+	return predicate.Ledger(sql.FieldEQ(FieldIsParty, v))
+}
+
+// IsPartyNEQ applies the NEQ predicate on the "is_party" field.
+func IsPartyNEQ(v bool) predicate.Ledger {
+	return predicate.Ledger(sql.FieldNEQ(FieldIsParty, v))
+}
+
+// IsBankEQ applies the EQ predicate on the "is_bank" field.
+func IsBankEQ(v bool) predicate.Ledger {
+	return predicate.Ledger(sql.FieldEQ(FieldIsBank, v))
+}
+
+// IsBankNEQ applies the NEQ predicate on the "is_bank" field.
+func IsBankNEQ(v bool) predicate.Ledger {
+	return predicate.Ledger(sql.FieldNEQ(FieldIsBank, v))
+}
+
+// IsCashEQ applies the EQ predicate on the "is_cash" field.
+func IsCashEQ(v bool) predicate.Ledger {
+	return predicate.Ledger(sql.FieldEQ(FieldIsCash, v))
+}
+
+// IsCashNEQ applies the NEQ predicate on the "is_cash" field.
+func IsCashNEQ(v bool) predicate.Ledger {
+	return predicate.Ledger(sql.FieldNEQ(FieldIsCash, v))
 }
 
 // HasGroup applies the HasEdge predicate on the "group" edge.

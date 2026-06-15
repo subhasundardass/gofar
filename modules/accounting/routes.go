@@ -19,7 +19,8 @@ import (
 func RegisterRoutes(app *fiber.App, h *handler.Handlers) {
 	grp := app.Group("/accounting")
 	grp.Get("/", h.Accounting.ChartOfAccount)
-	grp.Get("/ledger", h.Accounting.ListLedger)
+	grp.Get("/ledger", h.Master.ListLedger)
+	grp.Get("/ledger/new", h.Master.NewLedger)
 
 	// Journal
 	grp.Get("/journal", h.Journal.ListJournal)

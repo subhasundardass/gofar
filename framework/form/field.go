@@ -24,4 +24,10 @@ type Field interface {
 
 	// Validation
 	GetValidators() []Validator
+
+	// Reactive Rule Engine
+	GetVisibleIf() Rule
+	GetEnabledIf() Rule
+	GetRequiredIf() Rule
+	GetComputeWith() ComputeFunc
 }

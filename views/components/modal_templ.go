@@ -17,7 +17,7 @@ type ModalProps struct {
 	Width       string // "sm", "md", "lg"
 }
 
-func Modal2(props ModalProps) templ.Component {
+func Modal(props ModalProps) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
@@ -38,96 +38,67 @@ func Modal2(props ModalProps) templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div id=\"modal\" class=\"fixed inset-0 z-[9999]\" style=\"display:none\" data-cloak data-show=\"$modal.visible\"><!-- Backdrop --><div class=\"absolute inset-0 bg-black/50\" data-on:click=\"$modal.visible = false\"></div><!-- Modal box --><div class=\"relative flex items-center justify-center min-h-screen p-4\"><div class=\"bg-white rounded-lg shadow-xl w-full max-w-md\"><div class=\"px-4 py-3 border-b flex justify-between\"><h2>sfsd</h2><button data-on:click=\"$modal.visible = false\">✕</button></div><div class=\"p-4\">Modal Content</div></div></div></div>")
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		return nil
-	})
-}
-
-func Modal(props ModalProps) templ.Component {
-	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
-		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
-		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
-			return templ_7745c5c3_CtxErr
-		}
-		templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templruntime.GetBuffer(templ_7745c5c3_W)
-		if !templ_7745c5c3_IsBuffer {
-			defer func() {
-				templ_7745c5c3_BufErr := templruntime.ReleaseBuffer(templ_7745c5c3_Buffer)
-				if templ_7745c5c3_Err == nil {
-					templ_7745c5c3_Err = templ_7745c5c3_BufErr
-				}
-			}()
-		}
-		ctx = templ.InitializeContext(ctx)
-		templ_7745c5c3_Var2 := templ.GetChildren(ctx)
-		if templ_7745c5c3_Var2 == nil {
-			templ_7745c5c3_Var2 = templ.NopComponent
-		}
-		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "<div id=\"modal\" class=\"fixed inset-0 z-50\" data-show=\"$modal.visible\"><!-- Backdrop overlay --><!-- BACKDROP --><div class=\"absolute inset-0 bg-black/50\" data-on:click=\"$modal.visible=false\"></div><!-- Modal container --><div class=\"flex items-center justify-center min-h-screen p-4\"><div class=\"relative bg-white rounded-lg shadow-xl max-w-lg w-full transform transition-all\"><!-- Header --><div class=\"flex items-center justify-between px-6 py-4 border-b border-gray-200\"><h3 id=\"modal-title\" class=\"text-lg font-semibold text-gray-900\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div id=\"modal\" class=\"fixed inset-0 z-[9999]\" style=\"display:none\" data-cloak data-show=\"$modal.visible\"><!-- Backdrop overlay --><!-- BACKDROP --><div class=\"absolute inset-0 bg-black/50\" data-on:click=\"$modal.visible=false\"></div><!-- Modal container --><div class=\"flex items-center justify-center min-h-screen p-4\"><div class=\"relative bg-white rounded-lg shadow-xl max-w-lg w-full transform transition-all\"><!-- Header --><div class=\"flex items-center justify-between px-6 py-4 border-b border-gray-200\"><h3 id=\"modal-title\" class=\"text-lg font-semibold text-gray-900\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		if props.Title != "" {
-			var templ_7745c5c3_Var3 string
-			templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(props.Title)
+			var templ_7745c5c3_Var2 string
+			templ_7745c5c3_Var2, templ_7745c5c3_Err = templ.JoinStringErrs(props.Title)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/components/modal.templ`, Line: 67, Col: 20}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/components/modal.templ`, Line: 39, Col: 20}
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var2))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 		} else {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "Modal Title")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "Modal Title")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "</h3><button type=\"button\" data-on:click=\"\n\t\tconsole.log('CLICK WORKS');\n\t\t$modal.visible = !$modal.visible;\n\t\" class=\"text-gray-400 hover:text-gray-600 focus:outline-none transition-colors\" aria-label=\"Close modal\"><span class=\"sr-only\">Close</span> <svg class=\"w-6 h-6\" fill=\"none\" stroke=\"currentColor\" viewBox=\"0 0 24 24\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M6 18L18 6M6 6l12 12\"></path></svg></button></div><!-- Body --><div id=\"modal-body\" class=\"px-6 py-4 max-h-96 overflow-y-auto\"><!-- Content loaded via Datastar SSE --></div><!-- Footer (optional) -->")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "</h3><button type=\"button\" data-on:click=\"\n\t\tconsole.log('CLICK WORKS');\n\t\t$modal.visible = !$modal.visible;\n\t\" class=\"text-gray-400 hover:text-gray-600 focus:outline-none transition-colors\" aria-label=\"Close modal\"><span class=\"sr-only\">Close</span> <svg class=\"w-6 h-6\" fill=\"none\" stroke=\"currentColor\" viewBox=\"0 0 24 24\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M6 18L18 6M6 6l12 12\"></path></svg></button></div><!-- Body --><div id=\"modal-body\" class=\"px-6 py-4 max-h-96 overflow-y-auto\"><!-- Content loaded via Datastar SSE --></div><!-- Footer (optional) -->")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		if props.ShowFooter {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "<div class=\"px-6 py-3 border-t border-gray-200 flex justify-end gap-3\"><button type=\"button\" data-on:click=\"$modal.visible = false\" class=\"px-4 py-2 text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-md transition-colors\">Cancel</button>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "<div class=\"px-6 py-3 border-t border-gray-200 flex justify-end gap-3\"><button type=\"button\" data-on:click=\"$modal.visible = false\" class=\"px-4 py-2 text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-md transition-colors\">Cancel</button>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			if props.ShowConfirm {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "<button type=\"button\" data-on:click=\"$modal.onConfirm && $modal.onConfirm()\" class=\"px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md transition-colors\">")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "<button type=\"button\" data-on:click=\"$modal.onConfirm && $modal.onConfirm()\" class=\"px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md transition-colors\">")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 				if props.ConfirmText != "" {
-					var templ_7745c5c3_Var4 string
-					templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(props.ConfirmText)
+					var templ_7745c5c3_Var3 string
+					templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(props.ConfirmText)
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/components/modal.templ`, Line: 114, Col: 28}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/components/modal.templ`, Line: 86, Col: 28}
 					}
-					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
+					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
 				} else {
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "Confirm")
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "Confirm")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "</button>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "</button>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "</div>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "</div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, "</div></div></div>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "</div></div></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
